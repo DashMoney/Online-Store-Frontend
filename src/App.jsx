@@ -1275,7 +1275,7 @@ class App extends React.Component {
 
             returnedDoc.cart = JSON.parse(returnedDoc.cart);
 
-            // console.log("newConfirm:\n", returnedDoc);
+            console.log("newConfirm:\n", returnedDoc);
             docArray = [...docArray, returnedDoc];
           }
           this.setState(
@@ -1354,7 +1354,7 @@ class App extends React.Component {
       // }
     });
 
-    // console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
+    console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
     // console.log(`confirmsTupleToSort[0]: ${confirmsTupleToSort[0]}`);
 
     // [  // Cart Item Example
@@ -2167,16 +2167,10 @@ class App extends React.Component {
   /// HERE (BELOW)
 
   handleConfirmOrderModal = (theOrder, theNameDoc) => {
-    //HAVE TO DETERMINE THE RENTAL of request ->
-    // let requestItem = this.state.Inventory.find((item) => {
-    //   return item.$id === theRequest.itemId;
-    // });
-
     this.setState(
       {
         SelectedOrder: theOrder,
         SelectedOrderNameDoc: theNameDoc,
-        //SelectedItem: requestItem,
       },
       () => this.showModal("ConfirmOrderModal")
     );

@@ -234,6 +234,14 @@ class CartPage extends React.Component {
                 <p></p>
               </>
             )}
+            {!this.props.isLoginComplete?<>
+              <p
+                className="textsmaller"
+                style={{ marginTop: ".5rem", textAlign: "center" }}
+              >
+                <b> *Sign in to place your order!*</b>{" "}
+              </p>
+            </>:<></>}
           </div>
         </>{" "}
         {/* This is to close the LoadingOrder */}
