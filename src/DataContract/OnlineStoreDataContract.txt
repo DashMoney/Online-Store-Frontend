@@ -1,0 +1,257 @@
+//THIS IS THE ONLINE-STORE - REGISTER DATA CONTRACT
+
+const Dash = require('dash');
+
+const clientOpts = {
+  network: 'testnet',//<- CHANGE***
+  wallet: {
+    mnemonic: 'Your 12 word mnemonic',//<- CHANGE***
+    unsafeOptions: {
+      skipSynchronizationBeforeHeight: 1029000, //<- CHANGE***
+    },
+  },
+};
+
+const client = new Dash.Client(clientOpts);
+
+const registerContract = async () => {
+  const { platform } = client;
+  const identity = await platform.identities.get(
+    'Your Identity Id',//<- CHANGE***
+  );
+
+  const contractDocuments = {
+    store: {
+      type: 'object',
+      indices: [
+        {
+          //This is the FIND YOUR(Merchant) Store "About" Details 
+          name: 'ownerId',
+          properties: [{ $ownerId: 'asc' }],
+          unique: true, //<- SINGLETON
+        },
+      ],
+      properties: {
+        
+        details: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 10000, 
+          position: 0,
+        }, // JSON STRINGIFY AND PARSE
+      },
+
+      required: ['details', '$createdAt', '$updatedAt'],
+      additionalProperties: false,
+    },
+    inventory: {
+      type: 'object',
+      indices: [
+        {
+          //This is the FIND YOUR(Merchant) INVENTORY
+          name: 'ownerIdupdatedAt',
+          properties: [{ $ownerId: 'asc' }, { $updatedAt: 'asc' }],
+          unique: false,
+        },
+      ],
+      properties: {
+        items: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 18000, 
+          position: 0,
+        }, // JSON STRINGIFY AND PARSE
+
+
+        open: {
+          type: 'boolean',
+          position: 1,
+        },
+       
+
+        shipping: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 2000, 
+          position: 2,
+        }, // JSON STRINGIFY AND PARSE
+      },
+
+      required: ['items', 'open', '$createdAt', '$updatedAt'],
+      additionalProperties: false,
+    },
+    
+    order: {
+      //unconfirmed Order
+      type: 'object',
+      indices: [
+        {
+          //
+          //1) Customer Request -> their sent requests
+          //
+          name: 'ownerIdtoIdcreatedAt',
+          properties: [
+            { $ownerId: 'asc' }, // Customer's IdentityId
+            { toId: 'asc' }, //Restricts to Single MerchantStore
+            { $createdAt: 'asc' },
+          ],
+          unique: false,
+        },
+
+        {
+          
+          //Customer Query of Customer's Request 
+          name: 'ownerIdcreatedAt',
+          properties: [
+            { $ownerId: 'asc' }, // Customer's IdentityId
+            { $createdAt: 'asc' },
+          ],
+          unique: false,
+        },
+
+        // Merchant query of Customer Requests(most recent)
+        
+        {
+          name: 'toIdcreatedAt',
+          properties: [
+            { toId: 'asc' }, //the to (USE ARRAY***)
+            { $createdAt: 'asc' }, //most recent
+          ],
+          unique: false,
+        },
+      ],
+
+      properties: {
+        cart: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 4000, 
+          position: 0,
+        }, //WE DOING JSON STRINGIFY AND PARSE
+        toId: {
+          //This is the MerchantId
+          type: 'array',
+          byteArray: true,
+          minItems: 32,
+          maxItems: 32,
+          contentMediaType: 'application/x.dash.dpp.identifier',
+          position: 1,
+        },
+        amt: {
+          type: 'integer',
+          minimum: 0,
+          maximum: 1000000000000, // 10,000 Dash is max
+          position: 2,
+        },
+
+        msg: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 450,
+          position: 3,
+        },
+      },
+      required: ['cart', 'toId', 'amt', '$createdAt', '$updatedAt'],
+      additionalProperties: false,
+    }, // unconfirmed Order ^^^
+    confirm: {
+      type: 'object',
+      indices: [
+        {
+          //Customer query of Merchant Confirm
+          name: 'orderId',
+          properties: [
+            { orderId: 'asc' }, 
+            
+          ],
+          unique: false,
+        },
+        //Merchant query of MOST RECENT
+        {
+          
+          name: 'ownerIdcreatedAt',
+          properties: [{ $ownerId: 'asc' }, { $createdAt: 'asc' }],
+          unique: false,
+        },
+      ],
+
+      properties: {
+        orderId: {
+          type: 'array',
+          byteArray: true,
+          minItems: 32,
+          maxItems: 32,
+          contentMediaType: 'application/x.dash.dpp.identifier',
+          position: 0,
+        },
+        toId: {
+          type: 'array',
+          byteArray: true,
+          minItems: 32,
+          maxItems: 32,
+          contentMediaType: 'application/x.dash.dpp.identifier',
+          position: 0,
+        },
+        amt: {
+          type: 'integer',
+          minimum: 0,
+          maximum: 100000000000, // 1,000 Dash is max
+          position: 1,
+        },
+        cart: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 4000, 
+          position: 2,
+        },
+      },
+      required: ['orderId', 'cart', 'amt', '$createdAt', '$updatedAt'], 
+      additionalProperties: false,
+    }, // confirm ^^^
+    reply: {
+      type: 'object',
+      indices: [
+        {
+          name: 'confirmIdcreatedAt',
+          properties: [{ confirmId: 'asc' }, { $createdAt: 'asc' }],
+          unique: false,
+        },
+        {
+          //This is the FIND YOUR POSTS 
+          name: 'ownerIdcreatedAt',
+          properties: [{ $ownerId: 'asc' }, { $createdAt: 'asc' }],
+          unique: false,
+        },
+      ],
+      properties: {
+        confirmId: {
+          type: 'array',
+          byteArray: true,
+          minItems: 32,
+          maxItems: 32,
+          contentMediaType: 'application/x.dash.dpp.identifier',
+          position: 0,
+        },
+        msg: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 800,
+          position: 1,
+        },
+      },
+      required: ['confirmId', 'msg' '$createdAt', '$updatedAt'], //Added the created and updated so that can edit msgs in the future.
+      additionalProperties: false,
+    },
+  };
+
+  const contract = await platform.contracts.create(contractDocuments, identity);
+  console.dir({ contract: contract.toJSON() });
+
+  await platform.contracts.publish(contract, identity);
+  return contract;
+};
+
+registerContract()
+  .then((d) => console.log('Contract registered:\n', d.toJSON()))
+  .catch((e) => console.error('Something went wrong:\n', e))
+  .finally(() => client.disconnect());
