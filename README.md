@@ -2,7 +2,7 @@
 
 **This is a short description of how someone would operate a Dash Platform Frontend.**
 
-1. Copy this github repository to your own github account. https://github.com/DashMoney/????
+1. Copy this github repository to your own github account. https://github.com/DashMoney/Online-Store-Frontend
 2. Connect copied Github repository to hosting service (Vercel - I use Hobby-free edition).
 3. Add environment variables and domain name to hosting service.
    • See Below\*
