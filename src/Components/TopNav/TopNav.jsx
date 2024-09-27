@@ -42,8 +42,8 @@ class TopNav extends React.Component {
       );
     }
 
-    let isLoginComplete =
-      this.props.uniqueName !== "" && this.props.uniqueName !== "no name";
+    // let isLoginComplete =
+    //   this.props.uniqueName !== "" && this.props.uniqueName !== "no name";
 
     return (
       <>
@@ -162,7 +162,7 @@ class TopNav extends React.Component {
               <Offcanvas.Body>
                 {this.props.isLoggedIn ? (
                   <>
-                    {isLoginComplete ? (
+                    {this.props.isLoginComplete ? (
                       <div
                         onClick={() => this.props.handleSelectedPage("Login")}
                       >
@@ -250,7 +250,7 @@ class TopNav extends React.Component {
                         selectedPage={this.props.selectedPage}
                         handleSelectedPage={this.props.handleSelectedPage}
                       />
-                      {isLoginComplete ? (
+                      {this.props.isLoginComplete ? (
                         <NavSelects
                           selection="Orders"
                           selectionName="Your Orders"
@@ -298,7 +298,7 @@ class TopNav extends React.Component {
                     </Button>
                   </div>
 
-                  {isLoginComplete ? (
+                  {this.props.isLoginComplete ? (
                     <div
                       className="d-grid gap-2"
                       style={{

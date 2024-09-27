@@ -1,5 +1,5 @@
 import React from "react";
-import LocalForage from "localforage";
+//import LocalForage from "localforage";
 
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -233,6 +233,12 @@ class RegisterProxyModal extends React.Component {
       );
     }
 
+    let isProxyIdNameId = false;
+
+    if (this.state.nameDoc.$ownerId !== undefined) {
+      isProxyIdNameId = this.props.identity === this.state.nameDoc.$ownerId;
+    }
+
     return (
       <>
         <Modal
@@ -305,7 +311,20 @@ class RegisterProxyModal extends React.Component {
                   <></>
                 )}
 
-                {this.state.nameTaken ? (
+                {isProxyIdNameId ? (
+                  <p
+                    className="smallertext"
+                    style={{ color: "red", marginTop: ".2rem" }}
+                  >
+                    <b>
+                      The Proxy Account and Name Wallet should be different.
+                    </b>
+                  </p>
+                ) : (
+                  <></>
+                )}
+
+                {this.state.nameTaken && !isProxyIdNameId ? (
                   <p
                     className="smallertext"
                     style={{ color: "green", marginTop: ".2rem" }}
@@ -358,6 +377,7 @@ class RegisterProxyModal extends React.Component {
                 )}
 
                 {!this.state.validityCheck ||
+                isProxyIdNameId ||
                 (this.state.isLoading && !this.state.nameTaken) ? (
                   <>
                     <p></p>
@@ -371,7 +391,8 @@ class RegisterProxyModal extends React.Component {
 
                 {this.state.validityCheck &&
                 !this.state.isLoading &&
-                this.state.nameTaken ? (
+                this.state.nameTaken &&
+                !isProxyIdNameId ? (
                   <>
                     <div
                       className="d-grid gap-2"
