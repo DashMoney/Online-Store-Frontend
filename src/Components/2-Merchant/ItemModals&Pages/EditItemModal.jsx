@@ -601,6 +601,16 @@ class EditItemModal extends React.Component {
               </>
             ) : (
               <>
+                <p
+                  // className="textsmaller"
+                  style={{ color: "red", textAlign: "center" }}
+                >
+                  <b>
+                    {" "}
+                    *Be careful adjusting variants as this can break orders if
+                    the variant labels change.*
+                  </b>{" "}
+                </p>
                 <VariantsComponent
                   whichNetwork={this.props.whichNetwork}
                   mode={this.props.mode}

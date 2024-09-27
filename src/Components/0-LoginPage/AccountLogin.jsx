@@ -245,24 +245,25 @@ class AccountLogin extends React.Component {
                   <></>
                 )}
 
-                {!this.props.isLoadingName &&
+                {!this.props.isLoadingProxy &&
+                this.props.loggedInAs === "customer" &&
                 this.props.identity !== "no identity" ? (
                   <>
-                    {this.props.uniqueName === "no name" ? (
+                    {this.props.ProxyDoc === "" ? (
                       <>
                         <div className="indentStuff">
                           <h4>
-                            <b>Your Dash Name</b>
+                            <b>Create Proxy Account</b>
                           </h4>
                         </div>
                         <div className="d-grid gap-2">
                           <Button
                             variant="primary"
                             onClick={() =>
-                              this.props.showModal("RegisterNameModal")
+                              this.props.showModal("RegisterProxyModal")
                             }
                           >
-                            <b>Purchase Name</b>
+                            <b>Register Proxy</b>
                           </Button>
                         </div>
                       </>
@@ -270,25 +271,72 @@ class AccountLogin extends React.Component {
                       <></>
                     )}
 
-                    {this.props.uniqueName !== "no name" ? (
+                    {this.props.ProxyDoc !== "" &&
+                    !this.props.isLoginComplete ? (
                       <>
+                        <div className="indentStuff">
+                          <h4>
+                            <b>Connect Proxy Account</b>
+                          </h4>
+                        </div>
+                        <p></p>
+                        <Alert variant="success">
+                          <Alert.Heading>Name-Wallet Required</Alert.Heading>
+                          <p>
+                            <b>
+                              Add the IdentityId below, to your Name-Wallet's
+                              Proxy Accounts.
+                            </b>
+                          </p>
+                          <p>
+                            Then <b>Reload Proxy</b> to finish login.
+                          </p>
+                        </Alert>
+                        <div className="d-grid gap-2">
+                          <Button
+                            variant="primary"
+                            onClick={() => this.props.startProxyRace()}
+                          >
+                            <b>Reload Proxy</b>
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+
+                    {
+                      //this.props.ProxyDoc !== "" &&
+                      this.props.isLoginComplete ? (
+                        // this.props.ProxyNameDoc !== "" &&
+                        // this.props.ProxyDoc !== "" &&
+                        // this.props.ProxyTuple !== undefined
+                        //Pass a NOT VERIFIED, LabelName or no label! ->
+
                         <>
-                          <div className="indentStuff">
-                            <h4>
-                              <b>Your Dash Name</b>
-                            </h4>
-                            <ul>
-                              <li>
-                                <h5>
-                                  <b>{this.props.uniqueName}</b>
+                          {this.props.loggedInAs === "customer" ? (
+                            <>
+                              <h4>
+                                <b>Proxy Connected</b>
+                              </h4>
+                              <div className="indentStuff">
+                                <h5 style={{ color: "#008de4" }}>
+                                  <b>{this.props.ProxyNameDoc.label}*</b>
                                 </h5>
-                              </li>
-                            </ul>
-                          </div>
+                                <p style={{ marginLeft: "1rem" }}>
+                                  {" "}
+                                  {this.props.ProxyTuple[1]}
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <></>
+                          )}
 
                           <h6
                             style={{
-                              marginLeft: "1rem",
+                              //marginLeft: "1rem",
+                              textAlign: "center",
                               marginBottom: "1rem",
                             }}
                           >
@@ -312,12 +360,85 @@ class AccountLogin extends React.Component {
                             </Button>
                           </div>
                         </>
+                      ) : (
+                        <></>
+                      )
+                    }
+                  </>
+                ) : (
+                  <></>
+                )}
+                {this.props.loggedInAs === "merchant" &&
+                this.props.identity !== "no identity" ? (
+                  <>
+                    {this.props.loggedInAs === "merchant" &&
+                    !this.props.isLoginComplete ? (
+                      <>
+                        <p>
+                          As the merchant/owner of this frontend, you will need
+                          to log in with the Name-Wallet "12-word" mnemonic.
+                        </p>
+                        <p>
+                          You will have to obtain a name through logging into a
+                          Name-Wallet.
+                        </p>
                       </>
                     ) : (
                       <></>
                     )}
+
+                    {this.props.loggedInAs === "merchant" &&
+                    this.props.isLoginComplete ? (
+                      <>
+                        <div className="indentStuff">
+                          <h4>
+                            <b>Your Dash Name</b>
+                          </h4>
+                          <ul>
+                            <li>
+                              <h5>
+                                <b>{this.props.MerchantNameDoc.label}</b>
+                              </h5>
+                            </li>
+                          </ul>
+                        </div>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+
+                    <h6
+                      style={{
+                        marginLeft: "1rem",
+                        marginBottom: "1rem",
+                      }}
+                    >
+                      <b>Login complete!</b>
+                    </h6>
+
+                    <div
+                      className="d-grid gap-2"
+                      style={{
+                        marginBottom: "1rem",
+                      }}
+                    >
+                      <Button
+                        variant="primary"
+                        //size="lg"
+                        onClick={() =>
+                          this.props.handleSelectedPage("Inventory")
+                        }
+                      >
+                        <b>Go to Inventory</b>
+                      </Button>
+                    </div>
                   </>
                 ) : (
+                  //     ) : (
+                  //       <></>
+                  //     )
+                  //   }
+                  // </>
                   <></>
                 )}
               </div>
@@ -327,9 +448,9 @@ class AccountLogin extends React.Component {
               {this.props.identityError ? (
                 <>
                   <p>
-                    Identity retrieval error. Testnet Platform may be down,
-                    please refresh page and try again, or check the network with{" "}
-                    <b>Test Connection</b>.
+                    Identity retrieval error, please refresh page and try again,
+                    or check the network status with{" "}
+                    <b>platform-explorer.com</b>
                   </p>
                 </>
               ) : (
@@ -344,7 +465,7 @@ class AccountLogin extends React.Component {
 
           {this.props.isLoadingIdentity ||
           this.props.isLoadingIdInfo ||
-          this.props.isLoadingName ? (
+          this.props.isLoadingProxy ? (
             <>
               <p></p>
               <div id="spinner">
@@ -367,10 +488,10 @@ class AccountLogin extends React.Component {
                 this.handleExtraInfo();
               }}
             >
-              <h3>More about name/alias</h3>
+              <h3>What is a Proxy?</h3>
             </Button>
           </div> */}
-
+          {/* MAYBE CHANGE THIS TO EXPLAIN PROXY AND NAME WALLET INFO? -> */}
           {/* {this.state.extraInfo ? (
             <>
               <p></p>
@@ -410,7 +531,7 @@ class AccountLogin extends React.Component {
           ) : (
             <></>
           )} */}
-
+          <p></p>
           {this.props.identityInfo !== "" &&
           this.props.identity !== "no identity" ? (
             <div className="bodytext">
@@ -432,7 +553,7 @@ class AccountLogin extends React.Component {
               </Alert>
               <p style={{ textAlign: "center" }}>
                 Your IdentityID can be used for setting up your own Dash
-                Frontend.
+                Frontend or connecting a Proxy Account.
               </p>
               <p></p>
             </div>

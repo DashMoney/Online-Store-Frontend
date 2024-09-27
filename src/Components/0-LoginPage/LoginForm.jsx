@@ -213,10 +213,10 @@ class LoginForm extends React.Component {
           </Form>
           <div className="BottomBorder"></div>
           <p></p>
-          <p className="bodytext">
+          {/* <p className="bodytext">
             If you do not have an account, <b>Create New Account</b> below.
           </p>
-          <p></p>
+          <p></p> */}
           <div className="footer">
             <div className="d-grid gap-2">
               <Button
@@ -224,7 +224,7 @@ class LoginForm extends React.Component {
                 size="lg"
                 onClick={() => this.props.showModal("CreateNewWalletModal")}
               >
-                <b>Create New Account</b>
+                <b>Create Account</b>
               </Button>
             </div>
             {this.props.DashMoneyLFKeys.length === 0 ? (

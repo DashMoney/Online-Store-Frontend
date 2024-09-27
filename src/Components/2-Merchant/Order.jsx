@@ -93,9 +93,26 @@ class Order extends React.Component {
         return item.itemId === cartTuple[0].itemId;
       }); //this gets active as well
 
-      let theVariant = theItem.variants.find((vari) => {
-        return vari[0] === cartTuple[0].variant;
-      });
+      //FOR ITEM DELETED FROM INVENTORY
+      let theVariant;
+      if (theItem === undefined) {
+        theItem = {
+          name: "Item Not Found",
+          itemId: "Item Not Found",
+          variants: [["", "", 0]],
+        };
+        theVariant = ["", "", 0];
+      } else {
+        theVariant = theItem.variants.find((vari) => {
+          return vari[0] === cartTuple[0].variant;
+        });
+        if(theVariant === undefined){
+          theVariant = ["unknown", "", 0];
+        }
+      }
+      // let theVariant = theItem.variants.find((vari) => {
+      //   return vari[0] === cartTuple[0].variant;
+      // });
 
       if (theVariant[2] !== 0) {
         theTotal += cartTuple[1] * theVariant[2];
@@ -128,6 +145,22 @@ class Order extends React.Component {
     let item = this.props.Inventory.find((item) => {
       return item.$id === this.props.order.itemId;
     });
+
+    //FOR ITEM DELETED FROM INVENTORY
+    // let theVariant;
+    if (item === undefined) {
+      item = {
+        name: "Item Not Found",
+        itemId: "Item Not Found",
+        variants: [["", "", 0]],
+      };
+      //  theVariant = ["", "", 0];
+    }
+    // else {
+    //   theVariant = theItem.variants.find((vari) => {
+    //     return vari[0] === cartItem[0].variant;
+    //   });
+    // }
 
     let confirm = undefined;
 
@@ -221,9 +254,27 @@ class Order extends React.Component {
         return item.itemId === cartItem[0].itemId; //This is from the cart
       });
 
-      let theVariant = theItem.variants.find((vari) => {
-        return vari[0] === cartItem[0].variant;
-      });
+      //FOR ITEM DELETED FROM INVENTORY
+      let theVariant;
+      if (theItem === undefined) {
+        theItem = {
+          name: "Item Not Found",
+          itemId: "Item Not Found",
+          variants: [["", "", 0]],
+        };
+        theVariant = ["", "", 0];
+      } else {
+        theVariant = theItem.variants.find((vari) => {
+          return vari[0] === cartItem[0].variant;
+        });
+        if(theVariant === undefined){
+          theVariant = ["unknown", "", 0];
+        }
+      }
+
+      // let theVariant = theItem.variants.find((vari) => {
+      //   return vari[0] === cartItem[0].variant;
+      // });
 
       let variantRow = [];
       theIndex += 1;
