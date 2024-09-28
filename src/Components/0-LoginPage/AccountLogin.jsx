@@ -258,6 +258,7 @@ class AccountLogin extends React.Component {
                         </div>
                         <div className="d-grid gap-2">
                           <Button
+                            size="lg"
                             variant="primary"
                             onClick={() =>
                               this.props.showModal("RegisterProxyModal")
@@ -294,6 +295,7 @@ class AccountLogin extends React.Component {
                         </Alert>
                         <div className="d-grid gap-2">
                           <Button
+                            size="lg"
                             variant="primary"
                             onClick={() => this.props.startProxyRace()}
                           >

@@ -50,6 +50,7 @@ class RegisterProxyModal extends React.Component {
       isLoading: false,
       nameTaken: false,
       nameAvailable: false,
+      nameDoc: "",
     });
 
     this.formValidate(event.target.value);

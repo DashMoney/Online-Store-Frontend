@@ -840,6 +840,7 @@ class App extends React.Component {
     //THIS SHOULD CALL IDINFO, NAMES, AND ALIASES
     this.getIdentityInfo(theIdentity);
     this.getProxyDoc(theIdentity);
+    this.LOGINCOMPLETEQueryTrigger(theIdentity);
     //this.getNamefromIdentity(theIdentity);
   };
 
@@ -889,38 +890,6 @@ class App extends React.Component {
       })
       .finally(() => client.disconnect());
   };
-
-  // handleName = (nameToAdd) => {
-  //   //From Name Purchase
-  //   this.setState(
-  //     {
-  //       uniqueName: nameToAdd,
-  //       isLoadingName: false,
-  //     },
-  //     () => this.LOGINCOMPLETEQueryTrigger(this.state.identity)
-  //   );
-  //   //
-  //   //
-  //   //ADDS IDENTITY/NAME TO LF AFTER PURCHASE OF NAME
-  //   //  //******************** */
-  //   let DashMoneyLF = LocalForage.createInstance({
-  //     name: "dashmoney-platform-login",
-  //   });
-  //   let lfObject = {
-  //     identity: this.state.identity,
-  //     name: nameToAdd,
-  //   };
-
-  //   DashMoneyLF.setItem(this.state.walletId, lfObject)
-  //     .then((d) => {
-  //       //return DashMoneyLF.getItem(walletId);
-  //       console.log("Return from LF setitem:", d);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Something went wrong setting to DashMoneyLF:\n", err);
-  //     });
-  //   // //******************** */
-  // };
 
   getIdentityInfo = (theIdentity) => {
     // console.log("Called get identity info");
