@@ -105,7 +105,11 @@ class AccountLogin extends React.Component {
               this.props.identity === "no identity" &&
               this.props.accountBalance < 2000000 ? (
                 <>
-                  <p>There are insufficient funds in your wallet.</p>
+                  <p>
+                    There are insufficient funds in your wallet.(
+                    <b>0.02 Dash</b> should be sufficient for Identity
+                    Registration)
+                  </p>
 
                   <div className="d-grid gap-2">
                     <Button
