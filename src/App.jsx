@@ -1318,6 +1318,7 @@ class App extends React.Component {
 
   inventoryRace = () => {
     if (this.state.Inventory1 && this.state.Inventory2) {
+      let newArray = JSON.parse(JSON.stringify(this.state.InventoryDoc.items));
       this.setState(
         {
           Inventory1: false,
@@ -1326,10 +1327,7 @@ class App extends React.Component {
           //isLoadingOrders: false,
         },
         () =>
-          this.combineInventoryANDConfirms(
-            this.state.InventoryDoc.items,
-            this.state.ConfirmedOrders
-          )
+          this.combineInventoryANDConfirms(newArray, this.state.ConfirmedOrders)
       );
     }
   };
@@ -1372,13 +1370,13 @@ class App extends React.Component {
 
           for (const n of d) {
             let returnedDoc = n.toJSON();
-            //console.log("Item:\n", returnedDoc);
+            //console.log("Inventory:\n", returnedDoc);
             // returnedDoc.replyId = Identifier.from(
             //   returnedDoc.replyId,
             //   "base64"
             // ).toJSON();
             returnedDoc.items = JSON.parse(returnedDoc.items);
-            // console.log("newItem:\n", returnedDoc);
+            //console.log("newInventory:\n", returnedDoc.items);
             docArray = [...docArray, returnedDoc];
           }
 
@@ -1434,7 +1432,7 @@ class App extends React.Component {
 
           for (const n of d) {
             let returnedDoc = n.toJSON();
-            //console.log("Confirm:\n", returnedDoc);
+            // console.log("Confirm:\n", returnedDoc);
             returnedDoc.orderId = Identifier.from(
               returnedDoc.orderId,
               "base64"
@@ -1490,7 +1488,10 @@ class App extends React.Component {
       let filteredConfirms = theConfirms.filter((confirm) => {
         return confirm.$createdAt > this.state.InventoryDoc.$updatedAt;
       });
-      this.combineInventoryANDConfirmsFunction(theInventory, filteredConfirms);
+      this.combineInventoryANDConfirmsFunction(
+        JSON.parse(JSON.stringify(theInventory)),
+        filteredConfirms
+      );
     }
   };
 
@@ -1505,8 +1506,8 @@ class App extends React.Component {
      */
     //*** */
     //1) CONSOLIDATE THE CONFIRMS
-
-    // console.log(`theConfirms: ${theConfirms}`);
+    //console.log("InventoryDoc", this.state.InventoryDoc.items);
+    // console.log("theInventory", theInventory);
 
     let orderedItems = []; //This will be the reduced/sorted cartItem to reduce theInventory by
     let confirmsTupleToSort = []; //make this just an array of tuples
@@ -1521,7 +1522,7 @@ class App extends React.Component {
       // }
     });
 
-    console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
+    // console.log("confirmsTupleToSort: ", confirmsTupleToSort);
     // console.log(`confirmsTupleToSort[0]: ${confirmsTupleToSort[0]}`);
 
     // [  // Cart Item Example
@@ -1603,7 +1604,7 @@ class App extends React.Component {
       }
     }
 
-    console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
+    // console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
     //console.log(`orderedItems: ${orderedItems}`);
 
     //2)CHANGE THIS TO INVENTORY INSTEAD OF CART CHANGES AND I THINK ITS GOOD
@@ -1611,9 +1612,10 @@ class App extends React.Component {
     //and DONT FORGET TO HANDLE THE "" QTY DOESN'T MATTER ONES ->
     //
 
-    console.log("orderedItems", orderedItems);
+    //console.log("orderedItems", orderedItems);
 
-    let updatedInventory = [...theInventory];
+    let updatedInventory = JSON.parse(JSON.stringify(theInventory));
+    // console.log("updatedInventory", updatedInventory);
     //
     orderedItems.forEach((removedItem) => {
       //
@@ -1630,9 +1632,15 @@ class App extends React.Component {
       let availQty = "";
       //
       if (updatedInventory[theItemIndex].variants[theVariantIndex][1] !== "") {
+        //  console.log("removedItem: ", removedItem);
+        //  console.log(
+        //    "updatedInventory[theItemIndex].variants[theVariantIndex][1]: ",
+        //    updatedInventory[theItemIndex].variants[theVariantIndex][1]
+        //  );
         availQty =
           updatedInventory[theItemIndex].variants[theVariantIndex][1] -
           removedItem[1];
+        //  console.log("availQty: ", availQty);
         if (availQty >= 0) {
           updatedInventory[theItemIndex].variants[theVariantIndex][1] =
             availQty;
@@ -1649,6 +1657,7 @@ class App extends React.Component {
       },
       () => this.getMerchantName()
     );
+    console.log("updatedInventory", updatedInventory);
   };
   //
   //BELOW - For adding the name of merchant to the Item and Order
