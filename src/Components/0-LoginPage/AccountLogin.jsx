@@ -82,7 +82,7 @@ class AccountLogin extends React.Component {
                       {!this.props.isLoading &&
                       !this.props.isLoadingWallet &&
                       this.props.identity === "no identity" &&
-                      this.props.accountBalance === 0 ? (
+                      this.props.accountBalance < 2000000 ? (
                         <>
                           <Button
                             style={{ marginRight: "1rem" }}
@@ -103,7 +103,7 @@ class AccountLogin extends React.Component {
               {!this.props.isLoading &&
               !this.props.isLoadingWallet &&
               this.props.identity === "no identity" &&
-              this.props.accountBalance === 0 ? (
+              this.props.accountBalance < 2000000 ? (
                 <>
                   <p>There are insufficient funds in your wallet.</p>
 
@@ -125,7 +125,7 @@ class AccountLogin extends React.Component {
 
               {!this.props.isLoadingIdentity &&
               this.props.identity === "no identity" &&
-              this.props.accountBalance !== 0 ? (
+              this.props.accountBalance >= 2000000 ? (
                 <>
                   <div className="d-grid gap-2">
                     <Button
@@ -139,15 +139,23 @@ class AccountLogin extends React.Component {
                     </Button>
                   </div>
                   <p></p>
-                  <div className="bodytext">
-                    <p>
-                      You are ready to <b>Register an Identity</b> and then
-                      begin name purchasing!
-                    </p>
-                  </div>
-                  {/* <p>
-                    If this action doesn't work, Testnet Platform may be down.
-                  </p> */}
+                  {this.props.identityRegisterCount < 1 ? (
+                    <div className="bodytext">
+                      <p>
+                        You are ready to <b>Register an Identity</b> and then
+                        begin name purchasing!
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bodytext">
+                      <p style={{ color: "red" }}>
+                        This happens occasionally, as the{" "}
+                        <b>Registering of an Identity</b> is an indeterminate
+                        cost. You probably just need a little more in your
+                        wallet, like an additional <b>0.01 Dash</b>.
+                      </p>
+                    </div>
+                  )}
                 </>
               ) : (
                 <></>

@@ -99,6 +99,7 @@ class App extends React.Component {
       identity: "",
       identityInfo: "",
       identityRaw: "",
+      identityRegisterCount: 0,
       //uniqueName: "",
       proxyName: "",
 
@@ -685,7 +686,7 @@ class App extends React.Component {
                     identity: val.identity,
                     // uniqueName: val.name,
                     walletId: walletIdToTry,
-                    isLoadingProxy: false,
+                    // isLoadingProxy: false,
                     isLoadingIdentity: false,
                   },
                   () => this.handlePlatformLoginSeq(val.identity, theMnemonic)
@@ -1171,6 +1172,7 @@ class App extends React.Component {
       .catch((e) => {
         console.error("Something went wrong:\n", e);
         this.setState({
+          identityRegisterCount: this.state.identityRegisterCount + 1,
           isLoadingIdentity: false,
           isLoadingIdInfo: false,
           identityError: true,
@@ -4080,6 +4082,7 @@ class App extends React.Component {
                         handleSelectedPage={this.handleSelectedPage}
                         isLoadingIdentity={this.state.isLoadingIdentity}
                         isLoadingIdInfo={this.state.isLoadingIdInfo}
+                        identityRegisterCount={this.state.identityRegisterCount}
                         isLoadingProxy={this.state.isLoadingProxy}
                         startProxyRace={this.startProxyRace}
                         isLoadingWallet={this.state.isLoadingWallet}

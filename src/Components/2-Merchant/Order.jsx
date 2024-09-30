@@ -106,7 +106,7 @@ class Order extends React.Component {
         theVariant = theItem.variants.find((vari) => {
           return vari[0] === cartTuple[0].variant;
         });
-        if(theVariant === undefined){
+        if (theVariant === undefined) {
           theVariant = ["unknown", "", 0];
         }
       }
@@ -181,6 +181,12 @@ class Order extends React.Component {
     orderName = this.props.UnconfirmedOrdersNames.find((ordName) => {
       return ordName.$ownerId === this.props.order.$ownerId;
     });
+    if (orderName === undefined) {
+      orderName = {
+        label: "No Name Avail",
+        $ownerId: this.props.order.$ownerId,
+      };
+    }
     //}
 
     let orderReplies = [];
@@ -267,7 +273,7 @@ class Order extends React.Component {
         theVariant = theItem.variants.find((vari) => {
           return vari[0] === cartItem[0].variant;
         });
-        if(theVariant === undefined){
+        if (theVariant === undefined) {
           theVariant = ["unknown", "", 0];
         }
       }
