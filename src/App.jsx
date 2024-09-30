@@ -1532,20 +1532,23 @@ class App extends React.Component {
     //   2,
     // ],
 
-    if (confirmsTupleToSort.length !== 0) {
+    if (confirmsTupleToSort.length > 0) {
+      // !== 0
       //
       let totalQty = 0;
       let currentItem = confirmsTupleToSort[0][0];
       let foundIndex = 0;
-      let continueSearch = true;
+      //let continueSearch = true;
       //
-      while (confirmsTupleToSort.length > 0 || continueSearch) {
+      while (
+        confirmsTupleToSort.length > 0 //|| continueSearch
+      ) {
         //
         // totalQty = 0;
         // currentItem = confirmsTupleToSort[0][0];
         // console.log(currentItem);
         // foundIndex = 0;
-        continueSearch = true;
+        //  continueSearch = true;
 
         //
         // while (continueSearch) {
@@ -1571,10 +1574,10 @@ class App extends React.Component {
           if (confirmsTupleToSort.length > 0) {
             ///TESTING CHANGE FROM 1
             confirmsTupleToSort.splice(foundIndex, 1);
-          } else {
-            //I don't think I need this the splice will return and empty array and not undefined so just simplify.
-            confirmsTupleToSort = [];
-          }
+          } // else {
+          //I don't think I need this the splice will return and empty array and not undefined so just simplify.
+          //  confirmsTupleToSort = [];
+          //  }
           // console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
         }
 
@@ -1584,7 +1587,7 @@ class App extends React.Component {
           // add the current Item to the orderedItems
           orderedItems.push([currentItem, totalQty]);
           totalQty = 0;
-          continueSearch = false;
+          // continueSearch = false;
           //reset total to 0
           if (confirmsTupleToSort.length !== 0) {
             currentItem = confirmsTupleToSort[0][0];
