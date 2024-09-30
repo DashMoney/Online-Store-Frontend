@@ -1521,7 +1521,7 @@ class App extends React.Component {
       // }
     });
 
-    //console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
+    console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
     // console.log(`confirmsTupleToSort[0]: ${confirmsTupleToSort[0]}`);
 
     // [  // Cart Item Example
@@ -1568,7 +1568,8 @@ class App extends React.Component {
           //and slice out of array
 
           //  console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
-          if (confirmsTupleToSort.length > 1) {
+          if (confirmsTupleToSort.length > 0) {
+            ///TESTING CHANGE FROM 1
             confirmsTupleToSort.splice(foundIndex, 1);
           } else {
             //I don't think I need this the splice will return and empty array and not undefined so just simplify.
@@ -1599,13 +1600,15 @@ class App extends React.Component {
       }
     }
 
-    //console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
+    console.log(`confirmsTupleToSort: ${confirmsTupleToSort}`);
     //console.log(`orderedItems: ${orderedItems}`);
 
     //2)CHANGE THIS TO INVENTORY INSTEAD OF CART CHANGES AND I THINK ITS GOOD
     //
     //and DONT FORGET TO HANDLE THE "" QTY DOESN'T MATTER ONES ->
     //
+
+    console.log("orderedItems", orderedItems);
 
     let updatedInventory = [...theInventory];
     //
