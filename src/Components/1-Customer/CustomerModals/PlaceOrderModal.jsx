@@ -455,49 +455,19 @@ class PlaceOrderModal extends React.Component {
               {this.handleTotal()}
             </div>
             <p></p>
-            <Form.Group className="mb-3" controlId="formOrderComment">
-              <Form.Label>
-                <b>Additional Order Info</b>
-              </Form.Label>
-
-              <Form.Control
-                onChange={this.onChange}
-                as="textarea"
-                rows={2}
-                placeholder="You can put any extra info here for the merchant to see.."
-                required
-                isInvalid={this.state.tooLongDescriptionError}
-                isValid={this.state.validDescription}
-              />
-
-              {this.state.tooLongError ? (
-                <Form.Control.Feedback className="floatLeft" type="invalid">
-                  Sorry, this is too long! Please use less than 250 characters.
-                </Form.Control.Feedback>
-              ) : (
-                <></>
-              )}
-              <p></p>
-            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
-            {this.state.validComment ? (
-              <>
-                {this.state.loadTime >= 1 ? (
-                  <Button variant="primary" disabled>
-                    <b>Place Order ({this.state.loadTime})</b>
-                  </Button>
-                ) : (
-                  <Button variant="primary" onClick={this.handleSubmitClick}>
-                    <b>Place Order</b>
-                  </Button>
-                )}
-              </>
-            ) : (
-              <Button variant="primary" disabled>
-                <b>Place Order</b>
-              </Button>
-            )}
+            <>
+              {this.state.loadTime >= 1 ? (
+                <Button variant="primary" disabled>
+                  <b>Place Order ({this.state.loadTime})</b>
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={this.handleSubmitClick}>
+                  <b>Place Order</b>
+                </Button>
+              )}
+            </>
           </Modal.Footer>
         </Modal>
       </>

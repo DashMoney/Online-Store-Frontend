@@ -9,15 +9,29 @@ import CreditsOnPage from "../CreditsOnPage";
 import YourOrders from "./YourOrders";
 
 class YourOrdersPage extends React.Component {
-  // componentDidMount() {
-  //   if (this.props.isLoginComplete && this.props.InitialPullCustomer) {
-  //     this.props.pullInitialTriggerCUSTOMER();
-  //   }
-  // }
+  //https://stackoverflow.com/questions/37620694/how-to-scroll-to-bottom-in-react
+  scrollToTop = () => {
+    this.positionStart.scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
+    });
+  };
+  componentDidMount() {
+    this.scrollToTop();
+    //   if (this.props.isLoginComplete && this.props.InitialPullCustomer) {
+    //     this.props.pullInitialTriggerCUSTOMER();
+    //   }
+  }
   render() {
     return (
       <>
-        <div className="bodytext">
+        <div
+          className="bodytext"
+          ref={(el) => {
+            this.positionStart = el;
+          }}
+        >
           {/* <LowCreditsOnPage
             identityInfo={this.props.identityInfo}
             uniqueName={this.props.uniqueName}
@@ -87,7 +101,7 @@ class YourOrdersPage extends React.Component {
           ) : (
             <>
               <YourOrders
-              whichNetwork={this.props.whichNetwork}
+                whichNetwork={this.props.whichNetwork}
                 mode={this.props.mode}
                 identity={this.props.identity}
                 MerchantNameDoc={this.props.MerchantNameDoc}
@@ -112,7 +126,7 @@ class YourOrdersPage extends React.Component {
 
           {this.props.UnconfirmedOrders.length === 0 &&
           !this.props.isLoadingOrders ? (
-            <div className="bodytext">
+            <div className="bodytext" style={{ textAlign: "center" }}>
               <p>Sorry, no orders have been made.</p>
             </div>
           ) : (

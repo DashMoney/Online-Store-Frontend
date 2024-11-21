@@ -173,81 +173,54 @@ class Order extends React.Component {
     //this.props.UnconfirmedOrdersNames
     //this.props.OrderReplies
 
-    //
-
-    let orderName = "No Name";
-
-    //if (confirm !== undefined) {
-    orderName = this.props.UnconfirmedOrdersNames.find((ordName) => {
-      return ordName.$ownerId === this.props.order.$ownerId;
+    let orderProxy = this.props.OrdersProxies.find((ordProxy) => {
+      return ordProxy.$ownerId === this.props.order.$ownerId;
     });
-    if (orderName === undefined) {
-      orderName = {
-        label: "No Name Avail",
-        $ownerId: this.props.order.$ownerId,
-      };
-    }
-    //}
 
-    let orderReplies = [];
+    let orderName = {
+      label: "No Name Avail",
+      $ownerId: this.props.order.$ownerId,
+    };
 
-    if (
-      this.props.OrderReplies.length !== 0 &&
-      this.props.DisplayOrders === "Confirmed"
-    ) {
-      orderReplies = this.props.OrderReplies.filter((msg) => {
-        return confirm.$id === msg.confirmId;
+    let orderController;
+    let orderControllerTuple; //[IdentityId, Label]
+    //let isProxyApproved = false;
+
+    if (orderProxy !== undefined) {
+      orderController = this.props.OrdersControllers.find((ordController) => {
+        return ordController.$ownerId === orderProxy.controlId;
       });
-    }
 
-    //ADD THE ORDER.MSG HERE !!
-    if (this.props.order.msg !== undefined && this.props.order.msg !== "") {
-      orderReplies = [this.props.order, ...orderReplies];
-    }
+      if (orderController !== undefined) {
+        // if the proxyDoc is on the ControllerList -> need to check the list ->
+        // proxyList   //[IdentityId, Label]
+        orderControllerTuple = orderController.proxyList.find((tuple) => {
+          return orderProxy.$ownerId === tuple[0];
+        });
 
-    let orderReplyMessages = [];
+        if (orderControllerTuple !== undefined) {
+          orderName = this.props.UnconfirmedOrdersNames.find((ordName) => {
+            return ordName.$ownerId === orderController.$ownerId;
+          });
+        }
 
-    if (
-      //confirm !== undefined &&
-      orderReplies.length !== 0
-    ) {
-      orderReplyMessages = orderReplies.map((msg, index) => {
-        return (
-          // <Card
-          //   id="comment"
-          //   key={index}
-          //   index={index}
-          //   bg={cardBkg}
-          //   text={cardText}
-          // >
-          //   <Card.Body>
-          <div index={index} key={index}>
-            <div
-              className="ThreadBorder"
-              style={{ paddingTop: ".3rem", marginBottom: ".3rem" }}
-            ></div>
+        if (orderName === undefined) {
+          orderName = {
+            label: "No Name Avail",
+            $ownerId: this.props.order.$ownerId,
+          };
+        }
 
-            <Card.Title className="cardTitle">
-              {msg.$ownerId === this.props.identity ? (
-                <b style={{ color: "#008de4" }}>{this.props.uniqueName}</b>
-              ) : (
-                <b style={{ color: "#008de4" }}>{orderName.label}</b>
-              )}
-
-              <span className="textsmaller">
-                {formatDate(
-                  msg.$createdAt,
-                  this.props.today,
-                  this.props.yesterday
-                )}
-              </span>
-            </Card.Title>
-            <Card.Text>{msg.msg}</Card.Text>
-          </div>
-          //   </Card.Body>
-          // </Card>
-        );
-      });
+        // <div className="indentStuff">
+        //                         <h5 style={{ color: "#008de4" }}>
+        //                           <b>{this.props.ProxyNameDoc.label}*</b>
+        //                         </h5>
+        //                         <p style={{ marginLeft: "1rem" }}>
+        //                           {" "}
+        //                           {this.props.ProxyTuple[1]}
+        //                         </p>
+        //                       </div>
+      }
     }
 
     //  Table Creation (BELOW)
@@ -474,50 +447,6 @@ class Order extends React.Component {
               <></>
             )}
 
-            {/* {confirm !== undefined ? (
-              <>
-                {this.props.isYourOrdersRefreshReady ? (
-                  <>
-                    <div className="d-grid gap-2" id="button-edge-noTop">
-                      <Button
-                        variant="primary"
-                        // onClick={() => {
-                        //   this.props.refreshYourRides();
-                        // }}
-                        style={{
-                          fontSize: "larger",
-                          paddingLeft: "1rem",
-                          paddingRight: "1rem",
-                        }}
-                      >
-                        <b>Refresh</b>
-                      </Button>
-                    </div>
-                    <p></p>
-                  </>
-                ) : (
-                  <>
-                    <div className="d-grid gap-2" id="button-edge-noTop">
-                      <Button
-                        variant="primary"
-                        disabled
-                        style={{
-                          fontSize: "larger",
-                          paddingLeft: "1rem",
-                          paddingRight: "1rem",
-                        }}
-                      >
-                        <b>Refresh</b>
-                      </Button>
-                    </div>
-                    <p></p>
-                  </>
-                )}
-              </>
-            ) : (
-              <></>
-            )} */}
-
             {/* Need to Show the order message that can be sent with the order -> */}
 
             <>
@@ -529,45 +458,35 @@ class Order extends React.Component {
                 className="cardTitle"
                 style={{ marginTop: ".4rem", marginBottom: ".5rem" }}
               >
-                <h5>Responses</h5>
+                <h5>Status</h5>
                 {this.verifyOrderStatus(this.props.order, confirm)}
               </div>
             </>
 
-            {
-              //confirm !== undefined &&
-              orderReplies.length === 0 ? (
-                <>
-                  <p style={{ textAlign: "center", paddingTop: ".5rem" }}>
-                    (Currently, there are no messages to this order.)
-                  </p>
-                </>
-              ) : (
-                <></>
-              )
-            }
-
-            {orderReplyMessages}
+            <h5>
+              <span
+                style={{
+                  marginTop: ".2rem",
+                  marginBottom: "0rem",
+                }}
+              >
+                <b>Customer:</b>
+              </span>
+              <span
+                style={{
+                  color: "#008de3",
+                  marginTop: ".2rem",
+                  marginBottom: "0rem",
+                }}
+              >
+                {" "}
+                <b onClick={() => this.handleNameClick(orderName.label)}>
+                  {orderName.label}
+                </b>
+              </span>
+              <span>{this.state.copiedName ? <span>✅</span> : <></>}</span>
+            </h5>
             <p></p>
-            {confirm !== undefined ? (
-              <>
-                <div className="ButtonRightNoUnderline">
-                  <Button
-                    variant="primary"
-                    onClick={() =>
-                      this.props.handleMerchantReplyModalShow(
-                        confirm,
-                        orderName
-                      )
-                    }
-                  >
-                    <b>Add Message</b>
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
           </Card.Body>
         </Card>
       </>

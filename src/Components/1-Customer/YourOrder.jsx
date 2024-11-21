@@ -157,70 +157,8 @@ class YourOrder extends React.Component {
       return this.props.order.$id === confirm.orderId;
     });
 
-    //this.props.OrderReplies
-    //this.props.MerchantNameDoc
-
     //this.props.MerchantNameDoc
     //this.props.uniqueName
-
-    let orderReplies = [];
-
-    if (this.props.OrderReplies.length !== 0) {
-      orderReplies = this.props.OrderReplies.filter((msg) => {
-        return confirm.$id === msg.confirmId;
-      });
-    }
-
-    //ADD THE ORDER.MSG HERE !!
-    if (this.props.order.msg !== undefined && this.props.order.msg !== "") {
-      orderReplies = [this.props.order, ...orderReplies];
-    }
-
-    let orderReplyMessages = [];
-
-    if (
-      //confirm !== undefined &&
-      orderReplies.length !== 0
-    ) {
-      orderReplyMessages = orderReplies.map((msg, index) => {
-        return (
-          // <Card
-          //   id="comment"
-          //   key={index}
-          //   index={index}
-          //   bg={cardBkg}
-          //   text={cardText}
-          // >
-          //   <Card.Body>
-          <div index={index} key={index}>
-            <div
-              className="ThreadBorder"
-              style={{ paddingTop: ".2rem", marginBottom: ".3rem" }}
-            ></div>
-            <Card.Title className="cardTitle">
-              {msg.$ownerId === this.props.identity ? (
-                <b style={{ color: "#008de4" }}>{this.props.uniqueName}</b>
-              ) : (
-                <b style={{ color: "#008de4" }}>
-                  {this.props.MerchantNameDoc.label}
-                </b>
-              )}
-
-              <span className="textsmaller">
-                {formatDate(
-                  msg.$createdAt,
-                  this.props.today,
-                  this.props.yesterday
-                )}
-              </span>
-            </Card.Title>
-            <Card.Text>{msg.msg}</Card.Text>
-          </div>
-          //    </Card.Body>
-          // </Card>
-        );
-      });
-    }
 
     //  Table Creation (BELOW)
 
@@ -369,46 +307,6 @@ class YourOrder extends React.Component {
               </>
             )}
 
-            {/* <p></p>
-            <div className="d-grid gap-2">
-              <Button
-                // size="lg"
-                variant="primary"
-                onClick={() => this.props.handleSelectedItem(item)}
-              >
-                <b>View Item</b>
-              </Button>
-            </div> */}
-            {/* <p></p> */}
-            {/* <p
-              className="textsmaller"
-              style={{ marginTop: "1rem", textAlign: "center" }}
-            >
-              <b> *Click on me to view availability!*</b>{" "}
-            </p> */}
-
-            {/* Amount */}
-
-            {/* <h5 style={{ marginTop: ".2rem", textAlign: "center" }}>
-              {" "}
-              <b style={{ color: "#008de4" }}>
-                {handleDenomDisplay(this.props.whichNetwork,order.total)}
-              </b>{" "}
-              per day
-            </h5> */}
-            {/* <h4
-              style={{
-                marginTop: "1.5rem",
-                marginBottom: "2rem",
-                textAlign: "center",
-              }}
-            >
-              Total Cost{" "}
-              <b style={{ marginLeft: "1rem", color: "#008de4" }}>
-                {handleDenomDisplay(this.props.whichNetwork,this.props.order.amt)}
-              </b>
-            </h4> */}
-
             <p></p>
             <div className="cartTotal">
               <h4>
@@ -447,12 +345,10 @@ class YourOrder extends React.Component {
               className="cardTitle"
               style={{ marginTop: ".4rem", marginBottom: ".5rem" }}
             >
-              <h5>Responses</h5>
+              <h5>Status</h5>
               {this.verifyOrderStatus(this.props.order, confirm)}
             </div>
 
-            {/* {confirm !== undefined ? (
-              <> */}
             <h5>
               <span
                 style={{
@@ -481,39 +377,6 @@ class YourOrder extends React.Component {
               <span>{this.state.copiedName ? <span>✅</span> : <></>}</span>
             </h5>
             <p></p>
-            {/* </>
-            ) : (
-              <></>
-            )} */}
-
-            {confirm === undefined && orderReplies.length === 0 ? (
-              <>
-                <p style={{ textAlign: "center", paddingTop: ".5rem" }}>
-                  (Currently, there are no messages for this order.)
-                </p>
-              </>
-            ) : (
-              <></>
-            )}
-
-            {orderReplyMessages}
-            <p></p>
-            {confirm !== undefined ? (
-              <>
-                <div className="ButtonRightNoUnderline">
-                  <Button
-                    variant="primary"
-                    onClick={() =>
-                      this.props.handleCustomerReplyModalShow(confirm)
-                    }
-                  >
-                    <b>Add Message</b>
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
           </Card.Body>
         </Card>
       </>

@@ -8,7 +8,7 @@ export default function dapiClient(
   return {
     network: theNetwork,
     dapiAddresses: [
-      "35.165.50.126:1443",
+      // "35.165.50.126:1443",
       "52.10.229.11:1443",
       "54.149.33.167:1443",
       "52.24.124.162:1443",

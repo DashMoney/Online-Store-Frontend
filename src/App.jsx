@@ -74,6 +74,7 @@ class App extends React.Component {
       //ACCOUNT 'LOGIN' PAGE STATE
       isLoadingIdentity: true,
       isLoadingIdInfo: true,
+      isLoadingControllers: true,
       //isLoadingCreditTransfer: false,
       //isLoadingName: true,
       isLoadingProxy: true,
@@ -116,6 +117,9 @@ class App extends React.Component {
 
       CustomerProxy1: false,
       CustomerProxy2: false,
+
+      Controller1: false,
+      Controller2: false,
 
       accountBalance: "",
       accountHistory: "",
@@ -240,6 +244,7 @@ class App extends React.Component {
         //   },
         // ],
       },
+
       InventoryInitial: [],
       // - ConfirmedOrders
       //InventoryItems:[], // Final, Display, Calculated, Present
@@ -319,6 +324,10 @@ class App extends React.Component {
         //   // total:
         // },
       ],
+
+      OrdersProxies: [],
+
+      OrdersControllers: [],
 
       UnconfirmedOrdersNames: [
         // { $id: "6s5grhs5sgrtwg", $ownerId: "47s4hs5tg56wfh", label: "Alice" },
@@ -2072,41 +2081,21 @@ class App extends React.Component {
     });
   };
 
+  //MerchantRace
+  //Confirms    UnconfirmedOrders
+  //Replies     Proxies/Names
+  //but orderConfirms are pulled to create the inventory so there is no query here for that so this can be simplified greatly as the replies are no longer incorporated here. They are in the 2-Party
+
   startMerchantRace = () => {
     if (!this.state.isLoadingOrders) {
       this.setState({ isLoadingOrders: true });
     }
     if (this.state.Inventory.length !== 0) {
       //this.getConfirms();
-
       this.getOrders();
-      if (this.state.ConfirmedOrders.length !== 0) {
-        this.getConfirmReplies(this.state.ConfirmedOrders);
-      } else {
-        this.setState(
-          {
-            OrderReplies: [],
-            Merchant2: true,
-          },
-          () => this.merchantRace()
-        );
-      }
+     
     } else {
       this.setState({
-        Merchant1: false,
-        Merchant2: false,
-
-        isLoadingOrders: false,
-      });
-    }
-  };
-
-  merchantRace = () => {
-    if (this.state.Merchant1 && this.state.Merchant2) {
-      this.setState({
-        Merchant1: false,
-        Merchant2: false,
-
         isLoadingOrders: false,
       });
     }
@@ -2138,10 +2127,9 @@ class App extends React.Component {
 
           this.setState(
             {
-              Merchant1: true,
               UnconfirmedOrders: [],
-            },
-            () => this.merchantRace()
+              isLoadingOrders: false,
+            }
           );
         } else {
           let docArray = [];
@@ -2158,38 +2146,182 @@ class App extends React.Component {
             //  console.log("newRequest:\n", returnedDoc);
             docArray = [...docArray, returnedDoc];
           }
-          this.getOrdersNames(docArray);
-          // this.setState(
-          //   {
-          //     Merchant1: true,
-          //     UnconfirmedOrders: docArray,
-
-          //   },
-          //   () => this.merchantRace()
-          // );
+          //this.getOrdersNames(docArray);
+          this.startControllerRace(docArray);
         }
       })
       .catch((e) => console.error("Something went wrong:\n", e))
       .finally(() => client.disconnect());
   };
 
-  getOrdersNames = (docArray) => {
+  //*** *** *** Proxy ControllerCheck and Names *** *** ***
+
+  startControllerRace = (docArray) => {
+    if (!this.state.isLoadingControllers) {
+      this.setState({ isLoadingControllers: true });
+    }
+
+    this.getOrdersProxies(docArray);
+  };
+
+  controllerRace = () => {
+    if (this.state.Controller1 && this.state.Controller2) {
+      this.setState(
+        {
+          Controller1: false,
+          Controller2: false,
+          isLoadingControllers: false,
+          isLoadingOrders: false,
+        }
+      );
+    }
+  };
+
+  getOrdersProxies = (theDocArray) => {
+    const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
+
+    const getDocuments = async () => {
+      //console.log("Called Query OrdersProxies");
+
+      let ownerarrayOfOwnerIds = theDocArray.map((doc) => {
+        return doc.$ownerId;
+      });
+
+      let setOfOwnerIds = [...new Set(ownerarrayOfOwnerIds)];
+
+      let arrayOfOwnerIds = [...setOfOwnerIds];
+
+      return client.platform.documents.get("ProxyContract.proxy", {
+        where: [["$ownerId", "in", arrayOfOwnerIds]],
+        orderBy: [["$ownerId", "asc"]],
+      });
+    };
+
+    getDocuments()
+      .then((d) => {
+        let proxyDocArray = [];
+
+        if (d.length === 0) {
+          console.log("There are no ProxyDocs.");
+          this.setState(
+            {
+              Controller1: true,
+              Controller2: true,
+              UnconfirmedOrders: theDocArray,
+              OrdersProxies: proxyDocArray,
+              UnconfirmedOrdersNames: [],
+              OrdersControllers: [],
+            },
+            () => this.controllerRace()
+          );
+        } else {
+          for (const n of d) {
+            let proxyDoc = n.toJSON();
+            //console.log("proxyDoc:\n", n.toJSON());
+            proxyDoc.controlId = Identifier.from(
+              proxyDoc.controlId,
+              "base64"
+            ).toJSON();
+
+            proxyDocArray = [proxyDoc, ...proxyDocArray];
+          }
+
+          //console.log(`Proxy Docs: ${proxyDocArray}`);
+
+          this.getProxyControllers(theDocArray, proxyDocArray);
+          this.getControllerNames(theDocArray, proxyDocArray);
+        }
+      })
+      .catch((e) => {
+        console.error("Something went wrong:\n", e);
+      })
+      .finally(() => client.disconnect());
+  };
+
+  getProxyControllers = (theDocArray, proxyDocs) => {
+    const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
+
+    const getDocuments = async () => {
+      let ownerarrayOfControlIds = proxyDocs.map((doc) => {
+        return doc.controlId;
+      });
+
+      let setOfControlIds = [...new Set(ownerarrayOfControlIds)];
+
+      let arrayOfControlIds = [...setOfControlIds];
+
+      return client.platform.documents.get("ProxyContract.controller", {
+        where: [["$ownerId", "in", arrayOfControlIds]],
+        orderBy: [["$ownerId", "asc"]],
+      });
+
+      // console.log("Called Query ProxyController");
+    };
+
+    getDocuments()
+      .then((d) => {
+        if (d.length === 0) {
+          // console.log("There are no ProxyController.");
+
+          this.setState(
+            {
+              Controller1: true,
+              UnconfirmedOrders: theDocArray,
+              OrdersProxies: proxyDocs,
+              OrdersControllers: [],
+            },
+            () => this.controllerRace()
+          );
+        } else {
+          let proxyDocArray = [];
+          for (const n of d) {
+            let proxyDoc = n.toJSON();
+            //console.log("proxyDoc:\n", n.toJSON());
+
+            // proxyDoc.controlId = Identifier.from(
+            //   proxyDoc.controlId,
+            //   "base64"
+            // ).toJSON();
+
+            proxyDoc.proxyList = JSON.parse(proxyDoc.proxyList);
+
+            proxyDocArray = [proxyDoc, ...proxyDocArray];
+          }
+
+          this.setState(
+            {
+              Controller1: true,
+              UnconfirmedOrders: theDocArray,
+              OrdersProxies: proxyDocs,
+              OrdersControllers: proxyDocArray,
+            },
+            () => this.controllerRace()
+          );
+        }
+      })
+      .catch((e) => {
+        console.error("Something went wrong:\n", e);
+      })
+      .finally(() => client.disconnect());
+  };
+
+  getControllerNames = (theDocArray, proxyDocs) => {
     const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
     //START OF NAME RETRIEVAL
 
-    let ownerarrayOfOwnerIds = docArray.map((doc) => {
-      return doc.$ownerId;
+    let ownerarrayOfControlIds = proxyDocs.map((doc) => {
+      return doc.controlId;
     });
 
-    let setOfOwnerIds = [...new Set(ownerarrayOfOwnerIds)];
+    let setOfControlIds = [...new Set(ownerarrayOfControlIds)];
 
-    let arrayOfOwnerIds = [...setOfOwnerIds];
+    let arrayOfControlIds = [...setOfControlIds];
 
-    //console.log("Calling getNamesforDrives");
+    //console.log("Calling getNamesforControllers");
 
     const getNameDocuments = async () => {
       return client.platform.documents.get("DPNSContract.domain", {
-        where: [["records.identity", "in", arrayOfOwnerIds]],
+        where: [["records.identity", "in", arrayOfControlIds]],
         orderBy: [["records.identity", "asc"]],
       });
     };
@@ -2209,149 +2341,19 @@ class App extends React.Component {
         //console.log(`DPNS Name Docs: ${nameDocArray}`);
         this.setState(
           {
-            Merchant1: true,
-            UnconfirmedOrders: docArray,
+            Controller2: true,
             UnconfirmedOrdersNames: nameDocArray,
           },
-          () => this.merchantRace()
+          () => this.controllerRace()
         );
       })
       .catch((e) => {
-        console.error("Something went wrong getting Orders Names:\n", e);
-      })
-      .finally(() => client.disconnect());
-    //END OF NAME RETRIEVAL
-  };
-  //What if I just use the Confirms from the Inventory pull
-  // getConfirms = () => {
-  //   const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
-
-  //   const getDocuments = async () => {
-  //     //console.log("Called Get Req Replies");
-
-  //     return client.platform.documents.get("ONLINESTOREContract.confirm", {
-  //       where: [
-  //         ["$ownerId", "==", this.state.MerchantId],
-  //         ["$createdAt", "<=", Date.now()],
-  //       ],
-  //       orderBy: [
-  //         ["$createdAt", "desc"],
-  //       ],
-  //     });
-  //   };
-
-  //   getDocuments()
-  //     .then((d) => {
-  //       //console.log("Getting YourOrdersConfirms");
-  //       if (d.length === 0) {
-  //         //console.log("There are no YourOrdersConfirms");
-
-  //         this.setState(
-  //           {
-  //             ConfirmedOrders: [],
-  //             OrderReplies: [],
-  //             Merchant2: true,
-  //           },
-  //           () => this.merchantRace()
-  //         );
-  //       } else {
-  //         let docArray = [];
-
-  //         for (const n of d) {
-  //           let returnedDoc = n.toJSON();
-  //           //console.log("Confirm:\n", returnedDoc);
-  //           returnedDoc.orderId = Identifier.from(
-  //             returnedDoc.orderId,
-  //             "base64"
-  //           ).toJSON();
-
-  //           // console.log("newConfirm:\n", returnedDoc);
-  //           docArray = [...docArray, returnedDoc];
-  //         }
-
-  //         this.getConfirmReplies(docArray);
-  //       }
-  //     })
-  //     .catch((e) => {
-  //       console.error("Something went wrong Confirms:\n", e);
-  //     })
-  //     .finally(() => client.disconnect());
-  // };
-
-  getConfirmReplies = (theConfirms) => {
-    const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
-
-    // This Below is to get unique set of Confirm doc ids
-    let arrayOfConfirmIds = theConfirms.map((doc) => {
-      return doc.$id;
-    });
-
-    //console.log("Array of Confirm Req ids", arrayOfConfirmIds);
-
-    let setOfConfirmIds = [...new Set(arrayOfConfirmIds)];
-
-    arrayOfConfirmIds = [...setOfConfirmIds];
-
-    //console.log("Array of Confirm ids", arrayOfConfirmIds);
-
-    const getDocuments = async () => {
-      //console.log("Called Get Merchant Replies");
-
-      return client.platform.documents.get("ONLINESTOREContract.reply", {
-        where: [
-          ["confirmId", "in", arrayOfConfirmIds],
-          ["$createdAt", "<=", Date.now()],
-        ],
-        orderBy: [
-          ["confirmId", "asc"],
-          ["$createdAt", "desc"],
-        ],
-      });
-    };
-
-    getDocuments()
-      .then((d) => {
-        //console.log("Getting Confirm replies");
-        if (d.length === 0) {
-          //console.log("There are no ConfirmReplies");
-
-          this.setState(
-            {
-              //ConfirmedOrders: theConfirms,
-              OrderReplies: [],
-              Merchant2: true,
-            },
-            () => this.merchantRace()
-          );
-        } else {
-          let docArray = [];
-
-          for (const n of d) {
-            let returnedDoc = n.toJSON();
-            //console.log("Reply:\n", returnedDoc);
-            returnedDoc.confirmId = Identifier.from(
-              returnedDoc.confirmId,
-              "base64"
-            ).toJSON();
-            //console.log("newReply:\n", returnedDoc);
-            docArray = [returnedDoc, ...docArray];
-          }
-
-          this.setState(
-            {
-              // ConfirmedOrders: theConfirms,
-              OrderReplies: docArray,
-              Merchant2: true,
-            },
-            () => this.merchantRace()
-          );
-        }
-      })
-      .catch((e) => {
-        console.error("Something went wrong Merchant Replies:\n", e);
+        console.error("Something went wrong:\n", e);
       })
       .finally(() => client.disconnect());
   };
+
+  //^^^ ^^^ ^^^ Proxy ControllerCheck and Names *** *** ***
 
   /// HERE (BELOW)
 
@@ -2688,7 +2690,7 @@ class App extends React.Component {
       isLoadingOrders: true,
       isLoadingShoppingCart: true,
       isLoadingInventory: true,
-      selectedPage: "Inventory", //Or should this be orders ->
+      selectedPage: "Orders",
     });
 
     const client = new Dash.Client(
@@ -2970,7 +2972,13 @@ class App extends React.Component {
               docArray = [...docArray, returnedDoc];
             }
           }
-          this.getYourOrdersReplies(docArray, theDocArray);
+         // this.getYourOrdersReplies(docArray, theDocArray);
+         this.setState({
+          UnconfirmedOrders: theDocArray,
+          ConfirmedOrders: docArray,
+          OrderReplies: [],
+          isLoadingOrders: false,
+        });
         }
       })
       .catch((e) => {
@@ -2979,76 +2987,76 @@ class App extends React.Component {
       .finally(() => client.disconnect());
   };
 
-  getYourOrdersReplies = (theConfirms, theOrders) => {
-    const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
+  // getYourOrdersReplies = (theConfirms, theOrders) => {
+  //   const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
 
-    // This Below is to get unique set of Confirm doc ids
-    let arrayOfConfirmIds = theConfirms.map((doc) => {
-      return doc.$id;
-    });
+  //   // This Below is to get unique set of Confirm doc ids
+  //   let arrayOfConfirmIds = theConfirms.map((doc) => {
+  //     return doc.$id;
+  //   });
 
-    //console.log("Array of Confirm Req ids", arrayOfConfirmIds);
+  //   //console.log("Array of Confirm Req ids", arrayOfConfirmIds);
 
-    let setOfConfirmIds = [...new Set(arrayOfConfirmIds)];
+  //   let setOfConfirmIds = [...new Set(arrayOfConfirmIds)];
 
-    arrayOfConfirmIds = [...setOfConfirmIds];
+  //   arrayOfConfirmIds = [...setOfConfirmIds];
 
-    //console.log("Array of Confirm ids", arrayOfConfirmIds);
+  //   //console.log("Array of Confirm ids", arrayOfConfirmIds);
 
-    const getDocuments = async () => {
-      //console.log("Called Get Confirm Replies");
+  //   const getDocuments = async () => {
+  //     //console.log("Called Get Confirm Replies");
 
-      return client.platform.documents.get("ONLINESTOREContract.reply", {
-        where: [
-          ["confirmId", "in", arrayOfConfirmIds],
-          ["$createdAt", "<=", Date.now()],
-        ],
-        orderBy: [
-          ["confirmId", "asc"],
-          ["$createdAt", "desc"],
-        ],
-      });
-    };
+  //     return client.platform.documents.get("ONLINESTOREContract.reply", {
+  //       where: [
+  //         ["confirmId", "in", arrayOfConfirmIds],
+  //         ["$createdAt", "<=", Date.now()],
+  //       ],
+  //       orderBy: [
+  //         ["confirmId", "asc"],
+  //         ["$createdAt", "desc"],
+  //       ],
+  //     });
+  //   };
 
-    getDocuments()
-      .then((d) => {
-        //console.log("Getting YourOrdersReplies");
-        if (d.length === 0) {
-          //console.log("There are no YourOrdersReplies");
-          this.setState({
-            UnconfirmedOrders: theOrders,
-            ConfirmedOrders: theConfirms,
-            OrderReplies: [],
-            isLoadingOrders: false,
-          });
-        } else {
-          let docArray = [];
+  //   getDocuments()
+  //     .then((d) => {
+  //       //console.log("Getting YourOrdersReplies");
+  //       if (d.length === 0) {
+  //         //console.log("There are no YourOrdersReplies");
+  //         this.setState({
+  //           UnconfirmedOrders: theOrders,
+  //           ConfirmedOrders: theConfirms,
+  //           OrderReplies: [],
+  //           isLoadingOrders: false,
+  //         });
+  //       } else {
+  //         let docArray = [];
 
-          for (const n of d) {
-            let returnedDoc = n.toJSON();
-            //console.log("Reply:\n", returnedDoc);
-            returnedDoc.confirmId = Identifier.from(
-              returnedDoc.confirmId,
-              "base64"
-            ).toJSON();
-            //console.log("newReply:\n", returnedDoc);
-            //docArray = [...docArray, returnedDoc];
-            docArray = [returnedDoc, ...docArray];
-          }
+  //         for (const n of d) {
+  //           let returnedDoc = n.toJSON();
+  //           //console.log("Reply:\n", returnedDoc);
+  //           returnedDoc.confirmId = Identifier.from(
+  //             returnedDoc.confirmId,
+  //             "base64"
+  //           ).toJSON();
+  //           //console.log("newReply:\n", returnedDoc);
+  //           //docArray = [...docArray, returnedDoc];
+  //           docArray = [returnedDoc, ...docArray];
+  //         }
 
-          this.setState({
-            UnconfirmedOrders: theOrders,
-            ConfirmedOrders: theConfirms,
-            OrderReplies: docArray,
-            isLoadingOrders: false,
-          });
-        }
-      })
-      .catch((e) => {
-        console.error("Something went wrong Customer Replies:\n", e);
-      })
-      .finally(() => client.disconnect());
-  };
+  //         this.setState({
+  //           UnconfirmedOrders: theOrders,
+  //           ConfirmedOrders: theConfirms,
+  //           OrderReplies: docArray,
+  //           isLoadingOrders: false,
+  //         });
+  //       }
+  //     })
+  //     .catch((e) => {
+  //       console.error("Something went wrong Customer Replies:\n", e);
+  //     })
+  //     .finally(() => client.disconnect());
+  // };
 
   //SETTIMEOUT WAY BELOW
 
@@ -4204,6 +4212,8 @@ class App extends React.Component {
                         UnconfirmedOrdersNames={
                           this.state.UnconfirmedOrdersNames
                         }
+                        OrdersControllers={this.state.OrdersControllers}
+                        OrdersProxies={this.state.OrdersProxies}
                         OrderReplies={this.state.OrderReplies}
                         handleSelectedItem={this.handleSelectedItem}
                         handleConfirmOrderModal={this.handleConfirmOrderModal}

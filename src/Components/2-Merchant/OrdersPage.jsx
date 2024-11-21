@@ -86,6 +86,8 @@ class OrdersPage extends React.Component {
                 UnconfirmedOrders={this.props.UnconfirmedOrders}
                 ConfirmedOrders={this.props.ConfirmedOrders}
                 UnconfirmedOrdersNames={this.props.UnconfirmedOrdersNames}
+                OrdersControllers={this.props.OrdersControllers}
+                OrdersProxies={this.props.OrdersProxies}
                 OrderReplies={this.props.OrderReplies}
                 //
                 handleSelectedItem={this.props.handleSelectedItem}

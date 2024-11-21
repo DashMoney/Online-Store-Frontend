@@ -73,7 +73,7 @@ class InventoryPage extends React.Component {
 
           {this.props.Inventory.length === 0 &&
           !this.props.isLoadingInventory ? (
-            <div className="bodytext">
+            <div className="bodytext" style={{ textAlign: "center" }}>
               <p>Sorry, there are no items available.</p>
             </div>
           ) : (

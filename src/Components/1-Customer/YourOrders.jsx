@@ -12,7 +12,7 @@ class YourOrders extends React.Component {
     let orders = this.props.UnconfirmedOrders.map((order, index) => {
       //console.log(post);
       return (
-        <div key={index} style={{ marginBottom: "0.1rem" }}>
+        <div key={index} style={{ marginBottom: "0.5rem" }}>
           <YourOrder
             //key={index}
             whichNetwork={this.props.whichNetwork}

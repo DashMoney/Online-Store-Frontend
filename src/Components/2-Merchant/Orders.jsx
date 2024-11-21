@@ -61,7 +61,7 @@ class Orders extends React.Component {
       orders = unconfirmedOrders.map((order, index) => {
         //console.log(post);
         return (
-          <div key={index} style={{ marginBottom: "0.1rem" }}>
+          <div key={index} style={{ marginBottom: "0.5rem" }}>
             <Order
               whichNetwork={this.props.whichNetwork}
               //key={index}
@@ -84,6 +84,8 @@ class Orders extends React.Component {
               Inventory={this.props.Inventory}
               // UnconfirmedOrders={this.props.UnconfirmedOrders}
               ConfirmedOrders={this.props.ConfirmedOrders}
+              OrdersControllers={this.props.OrdersControllers}
+              OrdersProxies={this.props.OrdersProxies}
               UnconfirmedOrdersNames={this.props.UnconfirmedOrdersNames}
               OrderReplies={this.props.OrderReplies}
             />
@@ -121,6 +123,8 @@ class Orders extends React.Component {
               Inventory={this.props.Inventory}
               //UnconfirmedOrders={this.props.UnconfirmedOrders}
               ConfirmedOrders={this.props.ConfirmedOrders}
+              OrdersControllers={this.props.OrdersControllers}
+              OrdersProxies={this.props.OrdersProxies}
               UnconfirmedOrdersNames={this.props.UnconfirmedOrdersNames}
               OrderReplies={this.props.OrderReplies}
             />
