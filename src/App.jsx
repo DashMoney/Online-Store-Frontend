@@ -165,7 +165,7 @@ class App extends React.Component {
         //   1,
         // ],
       ],
-      //"", 10, 120000000
+      //"", 10, 120000000  //variant
       //Tuples of [cartItem,Qty2Purchase]
 
       SelectedConfirm: "",
@@ -291,7 +291,7 @@ class App extends React.Component {
         // },
       ],
 
-      InventoryConfirms: [], //This is only confirms after the InventoryUpdateAt. instead of separate just take the part after the inventory has returned. -> NOT USED ->
+      // InventoryConfirms: [], //This is only confirms after the InventoryUpdateAt. instead of separate just take the part after the inventory has returned. -> NOT USED -> Removed
 
       //Inventory
 
@@ -1430,7 +1430,7 @@ class App extends React.Component {
 
           this.setState(
             {
-              InventoryConfirms: [],
+              // InventoryConfirms: [],
               ConfirmedOrders: [],
               Inventory2: true,
             },
@@ -1454,7 +1454,7 @@ class App extends React.Component {
           }
           this.setState(
             {
-              InventoryConfirms: docArray,
+              // InventoryConfirms: docArray,
               ConfirmedOrders: docArray,
               Inventory2: true,
             },
@@ -1933,7 +1933,7 @@ class App extends React.Component {
   editInventory = () => {
     //If the items are not stringified, then need to stringify before saving
 
-    //  console.log("Called Edit Item");
+    // console.log("Called Edit Item");
     this.setState({
       isLoadingInventory: true,
       selectedPage: "Inventory",
@@ -2093,7 +2093,6 @@ class App extends React.Component {
     if (this.state.Inventory.length !== 0) {
       //this.getConfirms();
       this.getOrders();
-     
     } else {
       this.setState({
         isLoadingOrders: false,
@@ -2125,12 +2124,10 @@ class App extends React.Component {
         if (d.length === 0) {
           //console.log("There are no YourOrders");
 
-          this.setState(
-            {
-              UnconfirmedOrders: [],
-              isLoadingOrders: false,
-            }
-          );
+          this.setState({
+            UnconfirmedOrders: [],
+            isLoadingOrders: false,
+          });
         } else {
           let docArray = [];
           //console.log("Getting YourOrders");
@@ -2166,14 +2163,12 @@ class App extends React.Component {
 
   controllerRace = () => {
     if (this.state.Controller1 && this.state.Controller2) {
-      this.setState(
-        {
-          Controller1: false,
-          Controller2: false,
-          isLoadingControllers: false,
-          isLoadingOrders: false,
-        }
-      );
+      this.setState({
+        Controller1: false,
+        Controller2: false,
+        isLoadingControllers: false,
+        isLoadingOrders: false,
+      });
     }
   };
 
@@ -2784,7 +2779,6 @@ class App extends React.Component {
     );
   };
 
-  //CHANGE ->
   deleteOrder = () => {
     //console.log("Called Delete Order");
 
@@ -2844,23 +2838,6 @@ class App extends React.Component {
       .finally(() => client.disconnect());
   };
 
-  // pullInitialTriggerCUSTOMER = () => {
-  //   this.getYourOrders(this.state.identity);
-  //   //THIS IS FOR WHEN YOU LOGIN AND GET YOUR DRIVES
-  //   this.setState({
-  //     InitialPullCustomer: false,
-  //   });
-  // };
-
-  // pullOnPageLoadTriggerDRIVERS = () => {
-  //   //THIS IS FOR WHEN YOU SELECT THE DAPP, IT LOADS MOST RECENT RIDES POSTED
-  //   if (this.state.OnPageLoadDRIVERS) {
-  //     this.getInitialDrives();
-  //     this.setState({
-  //       OnPageLoadDRIVERS: false,
-  //     });
-  //   }
-  // };
   //CUSTOMER
   getYourOrders = (theIdentity) => {
     //console.log("Calling getYourOrders");
@@ -2972,13 +2949,13 @@ class App extends React.Component {
               docArray = [...docArray, returnedDoc];
             }
           }
-         // this.getYourOrdersReplies(docArray, theDocArray);
-         this.setState({
-          UnconfirmedOrders: theDocArray,
-          ConfirmedOrders: docArray,
-          OrderReplies: [],
-          isLoadingOrders: false,
-        });
+          // this.getYourOrdersReplies(docArray, theDocArray);
+          this.setState({
+            UnconfirmedOrders: theDocArray,
+            ConfirmedOrders: docArray,
+            OrderReplies: [],
+            isLoadingOrders: false,
+          });
         }
       })
       .catch((e) => {

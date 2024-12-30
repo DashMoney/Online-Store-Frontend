@@ -77,7 +77,7 @@ class AddItemToCartModal extends React.Component {
     // let qtyTotal = Get QTY from cart and this.state.quantity ->
 
     //this.state.itemQuantity <= this.props.SelectedCartItem.qty
-    return true;
+    //return true;
   };
 
   handleQuantityClick = (input) => {

@@ -40,12 +40,14 @@ class EditItemModal extends React.Component {
       whichVariantForm: "Single", //
 
       //'qty'
-      qtyInput: this.props.SelectedItem.variants[1],
+      qtyInput: this.props.SelectedItem.variants[0][1],
       validQty: true,
       tooLongQtyError: false,
 
       //'price'
-      priceInput: (this.props.SelectedItem.variants[2] / 100000000).toFixed(3),
+      priceInput: (
+        Number(this.props.SelectedItem.variants[0][2]) / 100000000
+      ).toFixed(3),
       validPrice: true,
 
       //   'extraInfo',
@@ -338,7 +340,8 @@ class EditItemModal extends React.Component {
         // priceInput: 0,
 
         name: this.state.nameInput,
-        itemId: this.props.SelectedItem.randomId,
+        itemId: this.props.SelectedItem.itemId,
+
         description: this.state.descriptionInput,
 
         imgArray: this.state.imgStateArray,
@@ -357,7 +360,7 @@ class EditItemModal extends React.Component {
     } else {
       editItem = {
         name: this.state.nameInput,
-        itemId: this.props.SelectedItem.randomId,
+        itemId: this.props.SelectedItem.itemId,
         description: this.state.descriptionInput,
 
         imgArray: this.state.imgStateArray,
@@ -586,9 +589,10 @@ class EditItemModal extends React.Component {
                     <Form.Control
                       type="text"
                       placeholder="0.85 for example.."
-                      defaultValue={(
-                        this.props.SelectedItem.variants[0][2] / 100000000
-                      ).toFixed(3)}
+                      defaultValue={this.state.priceInput}
+                      // {(
+                      //   this.props.SelectedItem.variants[0][2] / 100000000
+                      // ).toFixed(3)}
                       required
                       isValid={this.state.validPrice}
                       //isInvalid={!this.state.validAmt}

@@ -37,7 +37,53 @@ class ConfirmOrderModal extends React.Component {
   };
 
   handleSufficientInventory = () => {
-    return true;
+    return this.props.order.cart.every((tuple) => {
+      //What is in the tuple? itemObj&qty
+      //Tuples of [cartItem,Qty2Purchase]
+      //// [
+      //   {
+      //     itemId: "Cool T-Shirt345",
+      //     variant: "",
+      //   },
+      //   1,  //QTY
+      // ],
+      //"", 10, 120000000  //variant
+
+      //console.log("sufficInv Tuple: ", tuple);
+
+      //GET THE ITEM
+      let theItem = this.props.Inventory.find((item) => {
+        return item.itemId === tuple[0].itemId; //This is from the cart
+      });
+
+      if (theItem === undefined) {
+        //means the item is not in inventory
+        return false;
+      }
+
+      //GET THE VARIANT
+      let theVariant = theItem.variants.find((vari) => {
+        return vari[0] === tuple[0].variant;
+      });
+
+      //THEN COMPARE if not >= then set overall var to return to false. =>
+      if (theVariant === undefined) {
+        //means the variant is not in the cart
+        return false;
+      }
+
+      if (theVariant[1] === "") {
+        return true;
+      }
+
+      if (tuple[1] <= theVariant[1]) {
+        return true;
+      }
+
+      return false;
+    });
+    //if none fail then returns true
+    //return true; //handled with .every
   };
 
   handleTotalItems = () => {
@@ -220,7 +266,7 @@ class ConfirmOrderModal extends React.Component {
     let amtVerified = this.props.order.amt === this.handleTotalNotForDisplay();
     //console.log(amtVerified);
 
-    let qtyVerified = true; //Need to calc here -> this.handleSufficientInventory
+    let qtyVerified = this.handleSufficientInventory(); //Need to calc here -> DONE
 
     return (
       <>

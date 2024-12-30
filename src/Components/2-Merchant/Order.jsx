@@ -60,6 +60,56 @@ class Order extends React.Component {
     //}
   };
 
+  handleSufficientInventory = () => {
+    return this.props.order.cart.every((tuple) => {
+      //What is in the tuple? itemObj&qty
+      //Tuples of [cartItem,Qty2Purchase]
+      //// [
+      //   {
+      //     itemId: "Cool T-Shirt345",
+      //     variant: "",
+      //   },
+      //   1,  //QTY
+      // ],
+      //"", 10, 120000000  //variant
+
+      console.log("sufficInv Tuple: ", tuple);
+
+      //GET THE ITEM
+      let theItem = this.props.Inventory.find((item) => {
+        return item.itemId === tuple[0].itemId; //This is from the cart
+      });
+
+      if (theItem === undefined) {
+        //means the item is not in inventory
+        return false;
+      }
+
+      //GET THE VARIANT
+      let theVariant = theItem.variants.find((vari) => {
+        return vari[0] === tuple[0].variant;
+      });
+
+      //THEN COMPARE if not >= then set overall var to return to false. =>
+      if (theVariant === undefined) {
+        //means the variant is not in the cart
+        return false;
+      }
+
+      if (theVariant[1] === "") {
+        return true;
+      }
+
+      if (tuple[1] <= theVariant[1]) {
+        return true;
+      }
+
+      return false;
+    });
+    //if none fail then returns true
+    //return true; //handled with .every
+  };
+
   handleTotalItems = () => {
     let numOfItems = 0;
     this.props.order.cart.forEach((tuple) => {
@@ -142,24 +192,23 @@ class Order extends React.Component {
     // "Orders"
     // "Confirmed"
 
-    let item = this.props.Inventory.find((item) => {
-      return item.$id === this.props.order.itemId;
-    });
+    // let item = this.props.Inventory.find((item) => {
+    //   return item.$id === this.props.order.itemId;
+    // });
 
     //FOR ITEM DELETED FROM INVENTORY
-    // let theVariant;
-    if (item === undefined) {
-      item = {
-        name: "Item Not Found",
-        itemId: "Item Not Found",
-        variants: [["", "", 0]],
-      };
-      //  theVariant = ["", "", 0];
-    }
-    // else {
-    //   theVariant = theItem.variants.find((vari) => {
-    //     return vari[0] === cartItem[0].variant;
-    //   });
+    //let theVariant;
+    // if (item === undefined) {
+    //   item = {
+    //     name: "Item Not Found",
+    //     itemId: "Item Not Found",
+    //     variants: [["", "", 0]],
+    //   };
+    //   //  theVariant = ["", "", 0];
+    //   // } else {
+    //   //   theVariant = theItem.variants.find((vari) => {
+    //   //     return vari[0] === cartItem[0].variant;
+    //   //   });
     // }
 
     let confirm = undefined;
@@ -290,6 +339,8 @@ class Order extends React.Component {
 
     //  Table Creation ^^^
 
+    let qtyVerified = this.handleSufficientInventory(); //Need to calc here -> DONE
+
     return (
       <>
         <Card
@@ -326,13 +377,13 @@ class Order extends React.Component {
                 <span>{this.state.copiedName ? <span>✅</span> : <></>}</span>
               </h5>
 
-              <h5>
+              {/* <h5>
                 {" "}
                 <b //style={{ color: "#008de4" }}
                 >
                   {item.title}
                 </b>
-              </h5>
+              </h5> */}
 
               <span className="textsmaller">
                 {formatDate(
@@ -428,19 +479,30 @@ class Order extends React.Component {
             {confirm === undefined && !this.props.isLoadingOrders ? (
               <>
                 <p></p>
-                <div className="d-grid gap-2">
-                  <Button
-                    variant="primary"
-                    onClick={() =>
-                      this.props.handleConfirmOrderModal(
-                        this.props.order,
-                        orderName
-                      )
-                    }
-                  >
-                    <b>Confirm Order</b>
-                  </Button>
-                </div>
+                {qtyVerified ? (
+                  <>
+                    <div className="d-grid gap-2">
+                      <Button
+                        variant="primary"
+                        onClick={() =>
+                          this.props.handleConfirmOrderModal(
+                            this.props.order,
+                            orderName
+                          )
+                        }
+                      >
+                        <b>Confirm Order</b>
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="d-grid gap-2">
+                    <Button variant="primary" disabled>
+                      <b>Insufficient Inventory</b>
+                    </Button>
+                  </div>
+                )}
+
                 <p></p>
               </>
             ) : (

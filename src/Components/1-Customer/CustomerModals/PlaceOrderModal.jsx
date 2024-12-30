@@ -447,7 +447,7 @@ class PlaceOrderModal extends React.Component {
             {/* <Container>{orderItems}</Container> */}
 
             <p></p>
-            <div className="ButtonRight">
+            <div className="ButtonRightNoUnderline">
               <h4>
                 <b>Total</b> ({this.handleTotalItems()})<b>:</b>
               </h4>
