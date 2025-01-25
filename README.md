@@ -11,11 +11,14 @@
 \*These are the environmental variable that you need to create for operation:
 
 - VITE_FRONTEND_NAME = DashGetPaid
+- VITE_MERCHANT_NAME= (Your Dash Name)
 - VITE_MERCHANT_IDENTITY = (This is your Dash IdentityID)
 - VITE_BKGD = primary
 - VITE_NETWORK = testnet
 
 Frontend Name is what will appear in the top of page navigation bar.
+
+Merchant Name is the Dash name associated with the Merchant Identity.
 
 Merchant Identity can be found on your Account Login page
 

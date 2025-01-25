@@ -37,8 +37,18 @@ import DeleteOrderModal from "./Components/1-Customer/CustomerModals/DeleteOrder
 
 import CartPage from "./Components/1-Customer/CartPage";
 
-import CustomerReplyModal from "./Components/1-Customer/CustomerModals/CustomerReplyModal";
-import MerchantReplyModal from "./Components/2-Merchant/ItemModals&Pages/MerchantReplyModal";
+import AboutUsPageCustomer from "./Components/1-Customer/AboutUsPageCustomer";
+import AboutUsPageMerchant from "./Components/2-Merchant/AboutUsPageMerchant";
+import AboutUsConfirmModal from "./Components/2-Merchant/AboutUsConfirmModal";
+
+import ShippingPage from "./Components/2-Merchant/ShippingPage";
+import ShippingCreateModal from "./Components/2-Merchant/ShippingCreateModal";
+import ShippingEditModal from "./Components/2-Merchant/ShippingEditModal";
+
+import SaveShippingModal from "./Components/2-Merchant/ItemModals&Pages/SaveShippingModal";
+
+// import CustomerReplyModal from "./Components/1-Customer/CustomerModals/CustomerReplyModal";
+// import MerchantReplyModal from "./Components/2-Merchant/ItemModals&Pages/MerchantReplyModal";
 
 import TopUpIdentityModal from "./Components/TopUpIdentityModal";
 import FrontEndExplaination from "./Components/FrontEndExplaination";
@@ -82,7 +92,7 @@ class App extends React.Component {
 
       isLoadingWallet: true, //For wallet for topup
 
-      // isIdentityControlShowing: false,
+      //isIdentityControlShowing: false,
 
       identityError: false,
       idInfoError: false,
@@ -139,6 +149,7 @@ class App extends React.Component {
 
       isLoadingInventory: true,
       isLoadingOrders: true,
+      isLoadingAboutUs: true,
       isLoadingShoppingCart: false,
 
       Inventory1: false,
@@ -147,8 +158,12 @@ class App extends React.Component {
       SelectedItem: "", // should be the item document? the item in the array and the variant
       SelectedItemIndex: "", //for editing and deleting item
       //
+      SelectedShippingOption: "",
+      SelectedShippingIndex: "",
+      //
       SelectedCartItem: "",
       // {name: Name, variantName: VarName, price: Price }
+      // {name: Shipping...}
       SelectedCartItemIndex: "",
       //
 
@@ -163,6 +178,15 @@ class App extends React.Component {
         //     variant: "",
         //   },
         //   1,
+        // ],
+        //
+        //SHIPPING BELOW
+        // [
+        //   {
+        //     itemId: "$Shipping-456",
+        //     variant: "",
+        //   },
+        //   0,
         // ],
       ],
       //"", 10, 120000000  //variant
@@ -182,69 +206,71 @@ class App extends React.Component {
       InitialPullCustomer: true,
       InitialPullMerchant: true,
 
-      //StoreFront (Document) - Unique
-      //Pull this when toggle - About Page <- ***
-      MerchantStore: {
-        MerchantName: "Dash Online Store", // ? .env OR DPNS name??
-        //
-        description: "The best store",
-        supportedRegions: "USA,Canada,Mexico,EU",
-        //   supportedPayments: "Dash 2-Party, DashPay" //--FUTURE POSSIBILITY III--
-        contact: "email@gmail",
-        location: "Fargo, ND",
-        //shippingCost: ?
-      },
+      InitialPullAboutUs: true,
 
-      InventoryDoc: {
-        // $id: "6w6lwwwwwwwwwwg",
-        // $ownerId: "47hare67867867768uifh",
-        // $createdAt: Date.now() - 400000,
-        // $updatedAt: Date.now() - 400000,
-        // open: true, //Open or Close
-        // //Inventories are separate categories??? ->
-        // // FIRST TAKE - KISS
-        // items: [
-        //   {
-        //     //ITEM -> Points to Category, Contains variants
-        //     // Categoty(Plural)-Shirts, Item(singular), Variant(Type)
-        //     //
-        //     //Category: "Clothing", //Optional - String //--FUTURE POSSIBILITY I--
-        //     //
-        //     //subCategory: "Shirts", //--FUTURE POSSIBILITY III--
-        //     name: "Cool T-Shirt", //Title - String
-        //     itemId: "Cool T-Shirt345",
-        //     description: "blah blah blah description stuff", // - String
-        //     //SKU: "??", // VARIANT NAME/TYPE/SKU ///SO PUT IN THE VARIANTS!! ***
-        //     variants: [["", 10, 120000000]], // "",
-        //     //[{'singletonSKU', 10, 120000000}]  // singleton, qty, price
-        //     //
-        //     //SubVariant: "", //--FUTURE POSSIBILITY III--
-        //     //Quantity: 10,
-        //     //ShippingCost: "", //???   //--FUTURE POSSIBILITY II-- // I THINK FOR NOW JUST ADD STANDARD SHIPPING COST AND ADJUST IN PAYMENT??
-        //     imgArray: ["https://i.imgur.com/znIcOgA.jpeg"],
-        //     //linkArray: "",
-        //     //price: 120000000,
-        //     active: true,
-        //   },
-        //   {
-        //     //ITEM -> Points to Category, Contains variants
-        //     name: "Dash Water Bottle", //Title - String
-        //     itemId: "Dash Water Bottle97",
-        //     description: "blah blah blah description stuff", // - String
-        //     variants: [
-        //       ["Large", "", 100000000],
-        //       ["Medium", 0, 90000000],
-        //       ["Small", 1, 50000000],
-        //     ], //[{'singletonSKU', 10, 120000000}]  // singleton, qty, price
-        //     imgArray: [
-        //       "https://m.media-amazon.com/images/I/61rA3Ocd1TL._AC_SX679_.jpg",
-        //     ],
-        //     //linkArray: "",
-        //     active: true,
-        //   },
-        // ],
-      },
+      AboutUsDoc: "",
 
+      // //StoreFront (Document) - Unique
+      // //Pull this when toggle - About Page <- ***
+      // MerchantStore: {
+      //   MerchantName: "Dash Online Store", // ? .env OR DPNS name??
+      //   //
+      //   description: "The best store",
+      //   supportedRegions: "USA,Canada,Mexico,EU",
+      //   //   supportedPayments: "Dash 2-Party, DashPay" //--FUTURE POSSIBILITY III--
+      //   contact: "email@gmail",
+      //   location: "Fargo, ND",
+      //   //shippingCost: ?
+      // },
+
+      InventoryDoc: "",
+      // $id: "6w6lwwwwwwwwwwg",
+      // $ownerId: "47hare67867867768uifh",
+      // $createdAt: Date.now() - 400000,
+      // $updatedAt: Date.now() - 400000,
+      // open: true, //Open or Close
+      // //Inventories are separate categories??? ->
+      // // FIRST TAKE - KISS
+      // items: [
+      //   {
+      //     //ITEM -> Points to Category, Contains variants
+      //     // Categoty(Plural)-Shirts, Item(singular), Variant(Type)
+      //     //
+      //     //Category: "Clothing", //Optional - String //--FUTURE POSSIBILITY I--
+      //     //
+      //     //subCategory: "Shirts", //--FUTURE POSSIBILITY III--
+      //     name: "Cool T-Shirt", //Title - String
+      //     itemId: "Cool T-Shirt345",
+      //     description: "Light-weight, breathable, tri-blend polymer that is soft and machine washable.", // - String
+      //     //SKU: "??", // VARIANT NAME/TYPE/SKU ///SO PUT IN THE VARIANTS!! ***
+      //     variants: [["", 10, 120000000]], // "",
+      //     //[{'singletonSKU', 10, 120000000}]  // singleton, qty, price
+      //     //
+      //     //SubVariant: "", //--FUTURE POSSIBILITY III--
+      //     //Quantity: 10,
+      //     //ShippingCost: "", //???   //--FUTURE POSSIBILITY II-- // I THINK FOR NOW JUST ADD STANDARD SHIPPING COST AND ADJUST IN PAYMENT??
+      //     imgArray: ["https://i.imgur.com/znIcOgA.jpeg"],
+      //     //linkArray: "",
+      //     //price: 120000000,
+      //     active: true,
+      //   },
+      //   {
+      //     //ITEM -> Points to Category, Contains variants
+      //     name: "Dash Water Bottle", //Title - String
+      //     itemId: "Dash Water Bottle97",
+      //     description: "Keep your drink cool or hot with the best bottles on the market!", // - String
+      //     variants: [
+      //       ["Large", "", 100000000],
+      //       ["Medium", 0, 90000000],
+      //       ["Small", 1, 50000000],
+      //     ], //[{'singletonSKU', 10, 120000000}]  // singleton, qty, price
+      //     imgArray: [
+      //       "https://m.media-amazon.com/images/I/61rA3Ocd1TL._AC_SX679_.jpg",
+      //     ],
+      //     //linkArray: "",
+      //     active: true,
+      //   },
+      // ],
       InventoryInitial: [],
       // - ConfirmedOrders
       //InventoryItems:[], // Final, Display, Calculated, Present
@@ -294,6 +320,9 @@ class App extends React.Component {
       // InventoryConfirms: [], //This is only confirms after the InventoryUpdateAt. instead of separate just take the part after the inventory has returned. -> NOT USED -> Removed
 
       //Inventory
+
+      ShippingInitial: [], //Pull from InventoryDoc
+      ShippingOptions: [], //Edit ShippingOptions
 
       UnconfirmedOrders: [
         // {
@@ -406,6 +435,8 @@ class App extends React.Component {
         //$ownerId: import.meta.env.VITE_MERCHANT_IDENTITY,
         // label: "DashMoney3", //import.meta.env.VITE_FRONTEND_NAME
       },
+
+      merchantNameDocVerified: true,
 
       DisplayOrders: "Orders", //Merchant order view? just PlacedOrders and Confirmed?
 
@@ -1327,7 +1358,10 @@ class App extends React.Component {
 
   inventoryRace = () => {
     if (this.state.Inventory1 && this.state.Inventory2) {
-      let newArray = JSON.parse(JSON.stringify(this.state.InventoryDoc.items));
+      let newArray = [];
+      if (this.state.InventoryDoc !== "") {
+        newArray = JSON.parse(JSON.stringify(this.state.InventoryDoc.items));
+      }
       this.setState(
         {
           Inventory1: false,
@@ -1367,7 +1401,8 @@ class App extends React.Component {
           this.setState(
             {
               Inventory: [],
-              InventoryDoc: [],
+              InventoryDoc: "",
+
               // isLoadingInventory: false,
               Inventory1: true,
             },
@@ -1385,13 +1420,15 @@ class App extends React.Component {
             //   "base64"
             // ).toJSON();
             returnedDoc.items = JSON.parse(returnedDoc.items);
-            //console.log("newInventory:\n", returnedDoc.items);
+            console.log("newInventory:\n", returnedDoc);
             docArray = [...docArray, returnedDoc];
           }
 
           this.setState(
             {
               InventoryDoc: docArray[0],
+              ShippingInitial: JSON.parse(docArray[0].shipOpts), //Pull from InventoryDoc
+              ShippingOptions: JSON.parse(docArray[0].shipOpts), //Edit ShippingOptions
               //Inventory: docArray[0].items,
               Inventory1: true,
             },
@@ -1469,7 +1506,7 @@ class App extends React.Component {
   };
 
   combineInventoryANDConfirms = (theInventory, theConfirms) => {
-    if (theInventory === undefined) {
+    if (theInventory === "") {
       this.setState(
         {
           Inventory: [],
@@ -1686,14 +1723,26 @@ class App extends React.Component {
           console.log("There is no Name.");
           this.setState({
             isLoadingMerchantName: false,
+            merchantNameDocVerified: false,
           });
         } else {
           let nameRetrieved = d[0].toJSON();
           //console.log("Merchant Name retrieved:\n", nameRetrieved);
-          this.setState({
-            isLoadingMerchantName: false,
-            MerchantNameDoc: nameRetrieved,
-          });
+          if (
+            import.meta.env.VITE_MERCHANT_IDENTITY === nameRetrieved.$ownerId &&
+            import.meta.env.VITE_MERCHANT_NAME === nameRetrieved.label
+          ) {
+            this.setState({
+              isLoadingMerchantName: false,
+              MerchantNameDoc: nameRetrieved,
+              //merchantNameDocVerified:true,
+            });
+          } else {
+            this.setState({
+              isLoadingMerchantName: false,
+              merchantNameDocVerified: false,
+            });
+          }
         }
       })
       .catch((e) => {
@@ -1840,14 +1889,14 @@ class App extends React.Component {
   };
 
   saveInventory = () => {
-    if (this.state.InventoryDoc.length === 0) {
+    if (this.state.InventoryDoc === "") {
       this.createInventory();
     } else {
       this.editInventory();
     }
   };
   //IF INVENTORYDOC IS BLANK -> SAVEiNVENTORY WILL CREATE INVENTORY FIRST AND SUBSEQUENT WILL EDIT.
-  //This works not bc the InventoryDoc length is 0 but because if there is no inventory doc there is an empty array placed there.
+  //This works not bc the InventoryDoc length is 0 but because if there is no inventory doc there is an empty string placed there.
   //
   createInventory = () => {
     console.log("Called Create Inventory");
@@ -1875,8 +1924,9 @@ class App extends React.Component {
       }
       let inventoryProperties = {
         items: JSON.stringify(this.state.Inventory),
+        itemsImgs: "",
         open: true,
-        shipping: "",
+        shipOpts: "[]",
       };
 
       //console.log('Inventory to Create: ', inventoryProperties);
@@ -1972,8 +2022,8 @@ class App extends React.Component {
       //   document.set("open", itemObject.open);
       // }
 
-      // if (this.state.SelectedItem.shipping !== itemObject.shipping) {
-      //   document.set("shipping", itemObject.shipping);
+      // if (this.state.SelectedItem.shipOpts !== itemObject.shipOpts) {
+      //   document.set("shipOpts", itemObject.shipOpts);
       // }
 
       await platform.documents.broadcast({ replace: [document] }, identity);
@@ -2025,9 +2075,397 @@ class App extends React.Component {
 
   //SHIPPING
 
-  //componentOnLoad
-  // createShipping
-  //edit Shipping
+  // newShippingOption = {
+  //   label: this.state.nameInput,
+  //   shipId: randomId,
+  //   price: Number((this.state.priceInput * 100000000).toFixed(0)),
+  // };
+  //
+  // [[label, shipId, price],[...]]
+
+  //componentOnLoad - (This is part of inventoryDoc so DONE)
+  //createShipping
+  updateShippingOptions = (newShipOpt) => {
+    this.setState({
+      ShippingOptions: [
+        ...this.state.ShippingOptions,
+        [newShipOpt.label, newShipOpt.shipId, newShipOpt.price],
+      ],
+    });
+  };
+
+  handleEditShippingOption = (theIndex) => {
+    //array.find here..
+    //
+    this.setState(
+      {
+        SelectedShippingIndex: theIndex,
+        //SelectedItemIndex: index, //<- Need this for the editingfunction!!
+      },
+      () => this.showModal("ShippingEditModal")
+    );
+  };
+
+  deleteShippingOption = () => {
+    let editedShipping = [...this.state.ShippingOptions];
+
+    editedShipping.splice(this.state.SelectedShippingIndex, 1);
+
+    this.setState({
+      ShippingOptions: editedShipping,
+    });
+  };
+
+  editShippingOption = (theShipOpt) => {
+    let editedShippingOptions = [...this.state.ShippingOptions];
+
+    editedShippingOptions.splice(this.state.SelectedShippingIndex, 1, [
+      theShipOpt.label,
+      theShipOpt.shipId,
+      theShipOpt.price,
+    ]);
+
+    this.setState({
+      ShippingOptions: editedShippingOptions,
+    });
+  };
+
+  //
+  //edit Shipping/save Shipping there must already be a Inventory Doc
+  //
+  saveShipping = () => {
+    //If the items are not stringified, then need to stringify before saving
+
+    // console.log("Called Edit Item");
+    this.setState({
+      isLoadingInventory: true,
+      //selectedPage: "Inventory",
+    });
+
+    const client = new Dash.Client(
+      dapiClient(
+        this.state.whichNetwork,
+        this.state.mnemonic,
+        this.state.skipSynchronizationBeforeHeight
+      )
+    );
+
+    const submitItemDoc = async () => {
+      const { platform } = client;
+
+      let identity = "";
+      if (this.state.identityRaw !== "") {
+        identity = this.state.identityRaw;
+      } else {
+        identity = await platform.identities.get(this.state.identity);
+      }
+
+      const [document] = await client.platform.documents.get(
+        "ONLINESTOREContract.inventory",
+        {
+          where: [["$id", "==", this.state.InventoryDoc.$id]],
+        }
+      );
+
+      if (this.state.ShippingOptions !== this.state.ShippingInitial) {
+        document.set("shipOpts", JSON.stringify(this.state.ShippingOptions));
+      }
+
+      // if (this.state.SelectedItem.shipping !== itemObject.shipping) {
+      //   document.set("shipping", itemObject.shipping);
+      // }
+
+      await platform.documents.broadcast({ replace: [document] }, identity);
+      return document;
+
+      //############################################################
+      //This below disconnects the document editing..***
+
+      //return document;
+
+      //This is to disconnect the Document editing***
+      //############################################################
+    };
+
+    submitItemDoc()
+      .then((d) => {
+        // returnedDoc.replyId = Identifier.from(
+        //   returnedDoc.replyId,
+        //   "base64"
+        // ).toJSON();
+
+        //this.combineInventoryANDConfirms()
+
+        // let editedInventory = this.state.Inventory;
+
+        // editedInventory.splice(this.state.SelectedItemIndex, 1, returnedDoc);
+
+        let returnedDoc = d.toJSON();
+
+        returnedDoc.shipOpts = JSON.parse(returnedDoc.shipOpts);
+
+        console.log("Edited Shipping:\n", returnedDoc);
+
+        this.setState(
+          {
+            //InventoryDoc: returnedDoc,
+            //Inventory: returnedDoc.items,
+            //InventoryInitial: returnedDoc.items,
+            ShippingInitial: returnedDoc.shipOpts,
+            ShippingOptions: returnedDoc.shipOpts,
+            isLoadingInventory: false,
+          },
+          () => this.loadIdentityCredits()
+        );
+      })
+      .catch((e) => {
+        console.error("Something went wrong with Edit Shipping:\n", e);
+      })
+      .finally(() => client.disconnect());
+  };
+
+  //ABOUT US
+
+  pullInitialTriggerABOUTUS = () => {
+    if (this.state.InitialPullAboutUs) {
+      this.getAboutUs();
+      this.setState({
+        InitialPullAboutUs: false,
+      });
+    }
+  };
+
+  getAboutUs = () => {
+    const client = new Dash.Client(dapiClientNoWallet(this.state.whichNetwork));
+
+    const getDocuments = async () => {
+      return client.platform.documents.get("ONLINESTOREContract.about", {
+        where: [
+          ["$ownerId", "==", this.state.MerchantId],
+          // ["$updatedAt", "<=", Date.now()],
+        ],
+        // orderBy: [["$updatedAt", "desc"]],
+      });
+    };
+
+    getDocuments()
+      .then((d) => {
+        if (d.length === 0) {
+          console.log("There are no About Us");
+
+          this.setState({
+            AboutUsDoc: "",
+            isLoadingAboutUs: false,
+          });
+        } else {
+          let docArray = [];
+          //console.log("Getting AboutUs");
+
+          for (const n of d) {
+            let returnedDoc = n.toJSON();
+            //console.log("AboutUs:\n", returnedDoc);
+            // returnedDoc.replyId = Identifier.from(
+            //   returnedDoc.replyId,
+            //   "base64"
+            // ).toJSON();
+            returnedDoc.details = JSON.parse(returnedDoc.details);
+            //console.log("newAboutUs:\n", returnedDoc.items);
+            docArray = [...docArray, returnedDoc];
+          }
+
+          this.setState({
+            AboutUsDoc: docArray[0],
+            isLoadingAboutUs: false,
+          });
+        }
+      })
+      .catch((e) => {
+        console.error("Something went wrong Getting AboutUs:\n", e);
+      })
+      .finally(() => client.disconnect());
+  };
+
+  handleAboutUsConfirmModal = (theAboutUs) => {
+    this.setState(
+      {
+        AboutUsToSave: theAboutUs,
+      },
+      () => this.showModal("AboutUsConfirmModal")
+    );
+  };
+
+  saveAboutUs = () => {
+    if (this.state.AboutUsDoc === "") {
+      this.createAboutUs(this.state.AboutUsToSave);
+    } else {
+      this.editAboutUs(this.state.AboutUsToSave);
+    }
+  };
+
+  createAboutUs = (theAboutUs) => {
+    console.log("Called Create AboutUs");
+
+    this.setState({
+      isLoadingAboutUs: true,
+    });
+
+    const client = new Dash.Client(
+      dapiClient(
+        this.state.whichNetwork,
+        this.state.mnemonic,
+        this.state.skipSynchronizationBeforeHeight
+      )
+    );
+
+    const submitAboutUsDoc = async () => {
+      const { platform } = client;
+
+      let identity = "";
+      if (this.state.identityRaw !== "") {
+        identity = this.state.identityRaw;
+      } else {
+        identity = await platform.identities.get(this.state.identity);
+      }
+      let aboutUsProperties = {
+        details: JSON.stringify(theAboutUs),
+      };
+
+      //console.log('AboutUs to Create: ', aboutUsProperties);
+
+      // Create the document
+      const aboutUsDocument = await platform.documents.create(
+        "ONLINESTOREContract.about",
+        identity,
+        aboutUsProperties
+      );
+
+      //############################################################
+      //This below disconnects the document sending..***
+
+      //return aboutUsDocument;
+
+      //This is to disconnect the Document Creation***
+      //############################################################
+
+      const documentBatch = {
+        create: [aboutUsDocument], // Document(s) to create
+      };
+
+      await platform.documents.broadcast(documentBatch, identity);
+      return aboutUsDocument;
+    };
+
+    submitAboutUsDoc()
+      .then((d) => {
+        let returnedDoc = d.toJSON();
+        //console.log("Document:\n", returnedDoc);
+
+        // returnedDoc.replyId = Identifier.from(
+        //   returnedDoc.replyId,
+        //   "base64"
+        // ).toJSON();
+
+        returnedDoc.details = JSON.parse(returnedDoc.details);
+
+        console.log("AboutUsDocument:\n", returnedDoc);
+
+        this.setState(
+          {
+            AboutUsDoc: returnedDoc,
+            isLoadingAboutUs: false,
+          },
+          () => this.loadIdentityCredits()
+        );
+      })
+      .catch((e) => {
+        console.error("Something went wrong with About Us creation:\n", e);
+      })
+      .finally(() => client.disconnect());
+  };
+
+  editAboutUs = (theAboutUs) => {
+    //If the aboutUs are not stringified, then need to stringify before saving
+
+    // console.log("Called Edit About Us");
+    this.setState({
+      isLoadingAboutUs: true,
+    });
+
+    const client = new Dash.Client(
+      dapiClient(
+        this.state.whichNetwork,
+        this.state.mnemonic,
+        this.state.skipSynchronizationBeforeHeight
+      )
+    );
+
+    const submitItemDoc = async () => {
+      const { platform } = client;
+
+      let identity = "";
+      if (this.state.identityRaw !== "") {
+        identity = this.state.identityRaw;
+      } else {
+        identity = await platform.identities.get(this.state.identity);
+      }
+
+      const [document] = await client.platform.documents.get(
+        "ONLINESTOREContract.about",
+        {
+          where: [["$id", "==", this.state.AboutUsDoc.$id]],
+        }
+      );
+
+      document.set("details", JSON.stringify(theAboutUs));
+
+      // if (this.state.SelectedItem.open !== itemObject.open) {
+      //   document.set("open", itemObject.open);
+      // }
+
+      await platform.documents.broadcast({ replace: [document] }, identity);
+      return document;
+
+      //############################################################
+      //This below disconnects the document editing..***
+
+      //return document;
+
+      //This is to disconnect the Document editing***
+      //############################################################
+    };
+
+    submitItemDoc()
+      .then((d) => {
+        let returnedDoc = d.toJSON();
+
+        returnedDoc.details = JSON.parse(returnedDoc.details);
+
+        console.log("Edited AboutUs:\n", returnedDoc);
+
+        // returnedDoc.replyId = Identifier.from(
+        //   returnedDoc.replyId,
+        //   "base64"
+        // ).toJSON();
+
+        //this.combineAboutUsANDConfirms()
+
+        // let editedAboutUs = this.state.AboutUs;
+
+        // editedAboutUs.splice(this.state.SelectedItemIndex, 1, returnedDoc);
+
+        this.setState(
+          {
+            AboutUsDoc: returnedDoc,
+            isLoadingAboutUs: false,
+          },
+          () => this.loadIdentityCredits()
+        );
+      })
+      .catch((e) => {
+        console.error("Something went wrong with Edit AboutUs:\n", e);
+      })
+      .finally(() => client.disconnect());
+  };
 
   /*
   * STORE FUNCTIONS^^^^
@@ -2391,9 +2829,11 @@ class App extends React.Component {
 
       const confirmProperties = {
         orderId: this.state.SelectedOrder.$id,
-        //toId
+        toId: this.state.SelectedOrder.$ownerId,
         amt: this.state.SelectedOrder.amt,
         cart: JSON.stringify(this.state.SelectedOrder.cart),
+        msg: "",
+        shipping: this.state.SelectedOrder.shipping,
       };
       //console.log(' Create: ', confirmProperties);
 
@@ -2673,6 +3113,17 @@ class App extends React.Component {
       });
     }
   };
+
+  handleCustomerShippingFilter = (theSelected) => {
+    //This should be the shipping uniqueID
+    this.setState(
+      {
+        SelectedShippingOption: theSelected,
+      }
+      //() => console.log(this.state.SelectedShippingOption)
+    );
+  };
+
   //This is just handled by attaching showModal directly to the Modal for this.
   // handlePlaceOrderModal = () => {}
 
@@ -2710,7 +3161,8 @@ class App extends React.Component {
         cart: JSON.stringify(this.state.CartItems),
         amt: theTotal,
         toId: this.state.MerchantId,
-        msg: theComment,
+        msg: "", //theComment,
+        shipping: this.state.SelectedShippingOption,
       };
       //console.log(' Create: ', orderProperties);
 
@@ -2751,6 +3203,7 @@ class App extends React.Component {
           {
             UnconfirmedOrders: [returnedDoc, ...this.state.UnconfirmedOrders],
             CartItems: [],
+            SelectedShippingOption: "",
             isLoadingOrders: false,
             isLoadingInventory: false,
             isLoadingShoppingCart: false,
@@ -4035,7 +4488,24 @@ class App extends React.Component {
           identityInfo={this.state.identityInfo}
         />
         <Image fluid="true" id="dash-bkgd" src={DashBkgd} alt="Dash Logo" />
+
         <Container className="g-0">
+          {this.state.merchantNameDocVerified ? (
+            <></>
+          ) : (
+            <>
+              <h3
+                style={{
+                  textAlign: "center",
+                  color: "red",
+                  marginTop: ".5rem",
+                }}
+              >
+                MerchantId OR MerchantName fail to match Dash Platform State.
+                Continue at own risk.
+              </h3>
+            </>
+          )}
           {loggedInAs === "customer" ? (
             <>
               {this.state.selectedPage === "Inventory" ? (
@@ -4052,6 +4522,25 @@ class App extends React.Component {
                     mode={this.state.mode}
                     Inventory={this.state.Inventory}
                     showModal={this.showModal}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+              {this.state.selectedPage === "About Us" ? (
+                <>
+                  <AboutUsPageCustomer
+                    isLoadingAboutUs={this.state.isLoadingAboutUs}
+                    pullInitialTriggerABOUTUS={this.pullInitialTriggerABOUTUS}
+                    AboutUsDoc={this.state.AboutUsDoc}
+                    //identity={this.state.identity}
+                    //identityInfo={this.state.identityInfo}
+                    //uniqueName={uniqueName}
+                    mode={this.state.mode}
+                    //accountBalance={this.state.accountBalance}
+                    //isLoadingWallet={this.state.isLoadingWallet}
+                    //editCreateAboutUs={this.editCreateAboutUs}
+                    handleSelectedPage={this.handleSelectedPage}
                   />
                 </>
               ) : (
@@ -4081,6 +4570,25 @@ class App extends React.Component {
                     showModal={this.showModal}
                     // isLoadingWallet={this.state.isLoadingWallet}
                     // accountBalance={this.state.accountBalance}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+              {this.state.selectedPage === "About Us" ? (
+                <>
+                  <AboutUsPageMerchant
+                    isLoadingAboutUs={this.state.isLoadingAboutUs}
+                    pullInitialTriggerABOUTUS={this.pullInitialTriggerABOUTUS}
+                    AboutUsDoc={this.state.AboutUsDoc}
+                    identity={this.state.identity}
+                    identityInfo={this.state.identityInfo}
+                    uniqueName={uniqueName}
+                    mode={this.state.mode}
+                    accountBalance={this.state.accountBalance}
+                    isLoadingWallet={this.state.isLoadingWallet}
+                    handleAboutUsConfirmModal={this.handleAboutUsConfirmModal}
+                    handleSelectedPage={this.handleSelectedPage}
                   />
                 </>
               ) : (
@@ -4184,6 +4692,7 @@ class App extends React.Component {
                         }
                         refreshMerchantOrders={this.refreshMerchantOrders}
                         Inventory={this.state.Inventory}
+                        ShippingInitial={this.state.ShippingInitial}
                         UnconfirmedOrders={this.state.UnconfirmedOrders}
                         ConfirmedOrders={this.state.ConfirmedOrders}
                         UnconfirmedOrdersNames={
@@ -4274,6 +4783,31 @@ class App extends React.Component {
                     <></>
                   )}
 
+                  {this.state.selectedPage === "Shipping" ? (
+                    <>
+                      <ShippingPage
+                        isLoadingInventory={this.state.isLoadingInventory}
+                        isLoadingAboutUs={this.state.isLoadingAboutUs}
+                        identity={this.state.identity}
+                        identityInfo={this.state.identityInfo}
+                        uniqueName={uniqueName}
+                        mode={this.state.mode}
+                        pullInitialTriggerABOUTUS={
+                          this.pullInitialTriggerABOUTUS
+                        }
+                        InventoryDoc={this.state.InventoryDoc}
+                        AboutUsDoc={this.state.AboutUsDoc}
+                        ShippingInitial={this.state.ShippingInitial}
+                        ShippingOptions={this.state.ShippingOptions}
+                        handleEditShippingOption={this.handleEditShippingOption}
+                        showModal={this.showModal}
+                        whichNetwork={this.state.whichNetwork}
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
+
                   {/* {this.state.selectedPage === "Edit Item" ? (
                     <>
                       <EditItem
@@ -4344,6 +4878,7 @@ class App extends React.Component {
                         handleSelectedPage={this.handleSelectedPage}
                         //  this ^^^ send to rsrvs if have any
                         showModal={this.showModal}
+                        CartItems={this.state.CartItems}
                       />
                     </>
                   ) : (
@@ -4365,6 +4900,7 @@ class App extends React.Component {
                         }
                         refreshYourOrders={this.refreshYourOrders}
                         Inventory={this.state.Inventory}
+                        ShippingInitial={this.state.ShippingInitial}
                         //
                         UnconfirmedOrders={this.state.UnconfirmedOrders}
                         ConfirmedOrders={this.state.ConfirmedOrders}
@@ -4403,11 +4939,18 @@ class App extends React.Component {
                         handleEditCartItemModal={this.handleEditCartItemModal}
                         //handleSelectedItem={this.handleSelectedItem}
                         //
+                        handleCustomerShippingFilter={
+                          this.handleCustomerShippingFilter
+                        }
+                        SelectedShippingOption={
+                          this.state.SelectedShippingOption
+                        }
                         //MerchantNameDoc={this.state.MerchantNameDoc}
                         uniqueName={uniqueName}
                         mode={this.state.mode}
                         Inventory={this.state.Inventory}
                         CartItems={this.state.CartItems}
+                        ShippingOptions={this.state.ShippingOptions}
                         showModal={this.showModal}
                       />
                     </>
@@ -4522,6 +5065,56 @@ class App extends React.Component {
         ) : (
           <></>
         )}
+        {this.state.isModalShowing &&
+        this.state.presentModal === "ShippingCreateModal" ? (
+          <ShippingCreateModal
+            ShippingOptions={this.state.ShippingOptions}
+            //accountBalance={this.state.accountBalance}
+            //isLoadingWallet={this.state.isLoadingWallet}
+            isModalShowing={this.state.isModalShowing}
+            hideModal={this.hideModal}
+            mode={this.state.mode}
+            updateShippingOptions={this.updateShippingOptions}
+
+            // whichNetwork={this.state.whichNetwork}
+          />
+        ) : (
+          <></>
+        )}
+        {this.state.isModalShowing &&
+        this.state.presentModal === "ShippingEditModal" ? (
+          <ShippingEditModal
+            ShippingOptions={this.state.ShippingOptions}
+            SelectedShippingIndex={this.state.SelectedShippingIndex}
+            //accountBalance={this.state.accountBalance}
+            //isLoadingWallet={this.state.isLoadingWallet}
+            isModalShowing={this.state.isModalShowing}
+            hideModal={this.hideModal}
+            mode={this.state.mode}
+            editShippingOption={this.editShippingOption}
+            deleteShippingOption={this.deleteShippingOption}
+            whichNetwork={this.state.whichNetwork}
+          />
+        ) : (
+          <></>
+        )}
+        {this.state.isModalShowing &&
+        this.state.presentModal === "AboutUsConfirmModal" ? (
+          <AboutUsConfirmModal
+            //accountBalance={this.state.accountBalance}
+            //isLoadingWallet={this.state.isLoadingWallet}
+            isModalShowing={this.state.isModalShowing}
+            hideModal={this.hideModal}
+            mode={this.state.mode}
+            AboutUsToSave={this.state.AboutUsToSave}
+            saveAboutUs={this.saveAboutUs}
+            // whichNetwork={this.state.whichNetwork}
+            // doTopUpIdentity={this.doTopUpIdentity}
+            // closeTopNav={this.closeTopNav}
+          />
+        ) : (
+          <></>
+        )}
 
         {/* {this.state.isModalShowing &&
         this.state.presentModal === "RegisterNameModal" ? (
@@ -4544,7 +5137,6 @@ class App extends React.Component {
         ) : (
           <></>
         )} */}
-
         {this.state.isModalShowing &&
         this.state.presentModal === "EditItemModal" ? (
           <EditItemModal
@@ -4559,7 +5151,6 @@ class App extends React.Component {
         ) : (
           <></>
         )}
-
         {this.state.isModalShowing &&
         this.state.presentModal === "DeleteItemModal" ? (
           <DeleteItemModal
@@ -4572,7 +5163,6 @@ class App extends React.Component {
         ) : (
           <></>
         )}
-
         {this.state.isModalShowing &&
         this.state.presentModal === "SaveInventoryModal" ? (
           <SaveInventoryModal
@@ -4584,7 +5174,17 @@ class App extends React.Component {
         ) : (
           <></>
         )}
-
+        {this.state.isModalShowing &&
+        this.state.presentModal === "SaveShippingModal" ? (
+          <SaveShippingModal
+            saveShipping={this.saveShipping}
+            isModalShowing={this.state.isModalShowing}
+            hideModal={this.hideModal}
+            mode={this.state.mode}
+          />
+        ) : (
+          <></>
+        )}
         {this.state.isModalShowing &&
         this.state.presentModal === "ConfirmOrderModal" ? (
           <ConfirmOrderModal
@@ -4593,6 +5193,7 @@ class App extends React.Component {
             //MerchantId={this.state.MerchantId}
             //SelectedItem={this.state.SelectedItem}
             Inventory={this.state.Inventory}
+            ShippingInitial={this.state.ShippingInitial}
             order={this.state.SelectedOrder}
             SelectedOrderNameDoc={this.state.SelectedOrderNameDoc}
             createConfirmOrder={this.createConfirmOrder}
@@ -4603,8 +5204,7 @@ class App extends React.Component {
         ) : (
           <></>
         )}
-
-        {this.state.isModalShowing &&
+        {/* {this.state.isModalShowing &&
         this.state.presentModal === "CustomerReplyModal" ? (
           <CustomerReplyModal
             isModalShowing={this.state.isModalShowing}
@@ -4631,8 +5231,7 @@ class App extends React.Component {
           />
         ) : (
           <></>
-        )}
-
+        )} */}
         {this.state.isModalShowing &&
         this.state.presentModal === "AddItemToCartModal" ? (
           <AddItemToCartModal
@@ -4667,12 +5266,13 @@ class App extends React.Component {
         this.state.presentModal === "PlaceOrderModal" ? (
           <PlaceOrderModal
             // isLoadingWallet={this.state.isLoadingWallet}
-
             whichNetwork={this.state.whichNetwork}
             MerchantNameDoc={this.state.MerchantNameDoc}
             isModalShowing={this.state.isModalShowing}
             CartItems={this.state.CartItems}
             Inventory={this.state.Inventory}
+            SelectedShippingOption={this.state.SelectedShippingOption}
+            ShippingOptions={this.state.ShippingOptions}
             placeOrder={this.placeOrder}
             hideModal={this.hideModal}
             mode={this.state.mode}
@@ -4686,6 +5286,7 @@ class App extends React.Component {
             whichNetwork={this.state.whichNetwork}
             MerchantNameDoc={this.state.MerchantNameDoc}
             Inventory={this.state.Inventory}
+            ShippingInitial={this.state.ShippingInitial}
             order={this.state.SelectedOrder}
             deleteOrder={this.deleteOrder}
             isModalShowing={this.state.isModalShowing}

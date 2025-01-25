@@ -218,18 +218,19 @@ class TopNav extends React.Component {
                         selectedPage={this.props.selectedPage}
                         handleSelectedPage={this.props.handleSelectedPage}
                       />
-                      {/* <NavSelects
+                      <NavSelects
                         selection="Shipping"
                         selectionName="Shipping"
                         selectedPage={this.props.selectedPage}
                         handleSelectedPage={this.props.handleSelectedPage}
-                      /> */}
-                      {/* <NavSelects
+                      />
+                      <p></p>
+                      <NavSelects
                         selection="About Us"
                         selectionName="About Us"
                         selectedPage={this.props.selectedPage}
                         handleSelectedPage={this.props.handleSelectedPage}
-                      /> */}
+                      />
                     </>
                   ) : (
                     <></>
@@ -264,6 +265,13 @@ class TopNav extends React.Component {
                           </h5>
                         </Nav.Link>
                       )}
+                      <p></p>
+                      <NavSelects
+                        selection="About Us"
+                        selectionName="About Us"
+                        selectedPage={this.props.selectedPage}
+                        handleSelectedPage={this.props.handleSelectedPage}
+                      />
                     </>
                   ) : (
                     <></>
@@ -282,7 +290,7 @@ class TopNav extends React.Component {
                   <div
                     className="d-grid gap-2"
                     style={{
-                      marginTop: ".5rem",
+                      marginTop: "1.5rem",
                       paddingLeft: "1.5rem",
                       paddingRight: "1.5rem",
                     }}

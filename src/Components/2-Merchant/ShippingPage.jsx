@@ -2,182 +2,124 @@ import React from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import Card from "react-bootstrap/Card";
 //import Form from "react-bootstrap/Form";
-
 import handleDenomDisplay from "../UnitDisplay";
 
+import CreditsOnPage from "../CreditsOnPage";
+
 class ShippingPage extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      //
-      //Shipping Type
-      shippingInput: "",
-      validShipping: false,
-      tooLongShippingError: false,
-
-      //Shipping Details/Label
-      labelInput: "",
-      validLabel: false,
-      tooLongLabelError: false,
-
-      //'qty'
-      // qtyInput: "",
-      // validQty: true,
-      // tooLongQtyError: false,
-
-      //'price'
-      priceInput: 0,
-      validPrice: false,
-      tooLongPriceError: false,
-    };
-  }
-
-  onChange = (event) => {
-    // console.log(event.target.value);
-
-    //console.log(`id = ${event.target.id}`);
-
-    if (event.target.id === "formLabel") {
-      event.preventDefault();
-      event.stopPropagation();
-      this.labelValidate(event.target.value);
-    }
-    if (event.target.id === "formQty") {
-      event.preventDefault();
-      event.stopPropagation();
-      this.qtyValidate(event.target.value);
-    }
-    if (event.target.id === "formPrice") {
-      event.preventDefault();
-      event.stopPropagation();
-      this.priceValidate(event.target.value);
-    }
-  };
-
-  labelValidate = (label) => {
-    let regex = /^\S.{0,31}$/;
-    let valid = regex.test(label);
-
-    if (valid) {
-      this.setState({
-        labelInput: label,
-        tooLongLabelError: false,
-        validLabel: true,
-      });
-    } else {
-      if (label.length > 32) {
-        this.setState({
-          labelInput: label,
-          tooLongLabelError: true,
-          validLabel: false,
-        });
-      } else {
-        this.setState({
-          labelInput: label,
-          validLabel: false,
-        });
-      }
-    }
-  };
-
-  qtyValidate = (num) => {
-    let regex = /(^[0-9]{0,4}$)/;
-
-    let valid = regex.test(num);
-
-    if (valid) {
-      this.setState({
-        qtyInput: num,
-        validQty: true,
-        tooLongQtyError: false,
-      });
-    } else if (num.length >= 4) {
-      this.setState({
-        qtyInput: num,
-        validQty: false,
-        tooLongQtyError: true,
-      });
-    } else {
-      this.setState({
-        qtyInput: num,
-        validQty: false,
-        tooLongQtyError: false,
-      });
-    }
-  };
-
-  priceValidate = (price) => {
-    //let regex = /(^[0-9]+[.,]{0,1}[0-9]*$)|(^[.,][0-9]+$)/;
-
-    let regex = /(^[0-9]+[.,]{0,1}[0-9]{0,5}$)|(^[.,][0-9]{1,5}$)/;
-    //CHANGED TO LIMIT TO minimum mDash possible
-
-    let valid = regex.test(price);
-
-    if (valid) {
-      this.setState({
-        priceInput: price,
-        validPrice: true,
-      });
-    } else {
-      this.setState({
-        priceInput: price,
-        validPrice: false,
-      });
-    }
-  };
-
-  submitAndResetForm = () => {
-    // this.props.addFieldOfVariant({
-    //   name: this.state.labelInput,
-    //   qty: this.state.qtyInput,
-    //   price: this.state.priceInput,
-    // });
-    this.props.addFieldOfVariant([
-      this.state.labelInput,
-      this.state.qtyInput,
-      Number((this.state.priceInput * 100000000).toFixed(0)),
-    ]);
-
-    document.getElementById("formControlReset").reset();
-    //   <Form
-    //   id="formControlReset"
-    //   noValidate
-    //   //onubmit={this.submitAndResetForm}
-    //   onChange={this.onChange}
-    // >
-    //https://stackoverflow.com/questions/43922508/clear-and-reset-form-input-fields
-
-    this.setState({
-      //
-      labelInput: "",
-      validLabel: false,
-      //
-      qtyInput: "",
-      validQty: true,
-      //
-      priceInput: 0,
-      validPrice: false,
+  //https://stackoverflow.com/questions/37620694/how-to-scroll-to-bottom-in-react
+  scrollToTop = () => {
+    this.positionStart.scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
     });
   };
 
+  componentDidMount() {
+    this.scrollToTop();
+    this.props.pullInitialTriggerABOUTUS();
+  }
   render() {
     // I THINK i WILL MAKE SOME CARDS
     // HOW DOES THE CUSTOMER SELECT? WHAT IT LOOK LIKE
-    // use buttons like Nearby Dapp!! <-
+    // use buttons like Nearby Dapp!! <- no just use a dropdown
+
+    let needToSaveShipping = false;
+    if (
+      JSON.stringify(this.props.ShippingOptions) !==
+      JSON.stringify(this.props.ShippingInitial)
+    ) {
+      needToSaveShipping = true;
+    }
+
+    let cardBkg;
+    let cardText;
+
+    if (this.props.mode === "primary") {
+      cardBkg = "white";
+      cardText = "dark";
+    } else {
+      cardBkg = "dark";
+      cardText = "white";
+    }
+
+    let shipOptions = this.props.ShippingOptions.map((opt, index) => {
+      return (
+        <Card
+          id="card"
+          key={index}
+          index={index}
+          bg={cardBkg}
+          text={cardText}
+          style={{ marginBottom: "0.5rem" }}
+        >
+          <Card.Body>
+            <Card.Title>
+              {needToSaveShipping ? (
+                <>
+                  <p
+                    className="textsmaller"
+                    style={{
+                      marginTop: "1rem",
+                      textAlign: "center",
+                      color: "red",
+                    }}
+                  >
+                    <b> *Save Changes to Platform*</b>{" "}
+                  </p>
+                </>
+              ) : (
+                <></>
+              )}
+              <div className="cardTitle">
+                <span>{opt[0]}</span>
+                <span
+                  style={{
+                    color: "#008de3",
+                  }}
+                >
+                  {handleDenomDisplay(this.props.whichNetwork, opt[2])}
+                </span>
+              </div>
+            </Card.Title>
+            <Button
+              // size="lg"
+              variant="success"
+              onClick={() => this.props.handleEditShippingOption(index)}
+            >
+              <b>Edit Option</b>
+            </Button>
+          </Card.Body>
+        </Card>
+      );
+    });
+
     return (
       <>
         <div
-          className="bodytext" //bodytextnotop
+          className="bodytext"
+          ref={(el) => {
+            this.positionStart = el;
+          }}
         >
-          {needToSaveInventory && !this.props.isLoadingInventory ? (
+          <CreditsOnPage
+            identityInfo={this.props.identityInfo}
+            uniqueName={this.props.uniqueName}
+            showModal={this.props.showModal}
+          />
+
+          {needToSaveShipping &&
+          !this.props.isLoadingInventory &&
+          this.props.InventoryDoc !== "" ? (
             <>
               <div className="d-grid gap-2">
                 <Button
                   // size="lg"
                   variant="success"
-                  onClick={() => this.props.showModal("SaveInventoryModal")}
+                  onClick={() => this.props.showModal("SaveShippingModal")}
                 >
                   <b style={{ fontSize: "larger" }}>Save Changes</b>
                 </Button>
@@ -193,8 +135,9 @@ class ShippingPage extends React.Component {
             <></>
           )}
 
-          <h2>Shipping Options</h2>
-          {this.props.isLoadingInventory ? (
+          <h2 style={{ marginBottom: ".8rem" }}>Shipping Options</h2>
+
+          {this.props.isLoadingAboutUs || this.props.isLoadingInventory ? (
             <>
               <p></p>
               <div id="spinner">
@@ -205,104 +148,94 @@ class ShippingPage extends React.Component {
               <p> </p>
             </>
           ) : (
-            <>
-              <Form
-                id="formControlReset"
-                noValidate
-                //onSubmit={this.submitAndResetForm}
-                onChange={this.onChange}
-              >
-                {/* LABEL FORM BELOW */}
-                <Form.Group className="mb-3" controlId="formLabel">
-                  <h5 style={{ marginTop: ".2rem", marginBottom: ".2rem" }}>
-                    <b>Label Name</b>
-                  </h5>
-                  <Form.Control
-                    // onChange={this.onChange}
-
-                    type="text"
-                    placeholder="Enter name of variant..."
-                    required
-                    isInvalid={this.state.tooLongLabelError}
-                    isValid={this.state.validLabel}
-                  />
-                  <p></p>
-                  <Form.Control.Feedback type="invalid">
-                    Item name is too long.
-                  </Form.Control.Feedback>
-                </Form.Group>
-                {/* Quantity FORM BELOW */}
-
-                <Form.Group className="mb-3" controlId="formQty">
-                  <h5 style={{ marginTop: ".5rem", marginBottom: ".2rem" }}>
-                    Item Quantity
-                  </h5>
-
-                  {/* <InputGroup className="mb-3"> */}
-                  <Form.Control
-                    //onChange={this.onChange}
-                    type="number"
-                    step="1"
-                    // precision="0"
-                    // min="1"
-                    // max="2000"
-                    // defaultValue="15"
-                    placeholder="Enter quantity.."
-                    required
-                    isInvalid={this.state.tooLongQtyError}
-                    isValid={this.state.validQty}
-                    aria-describedby="basic-addon2"
-                  />
-                  {/* <InputGroup.Text id="basic-addon2">days</InputGroup.Text> */}
-                  {/* </InputGroup> */}
-                  <p className="smallertext">
-                    Leave <b>Item Quantity</b> blank if you don't want inventory
-                    to track, or you have as much of something as anyone can
-                    order.
-                  </p>
-                  <p></p>
-                  <Form.Control.Feedback type="invalid">
-                    Quantity is too much.
-                  </Form.Control.Feedback>
-                </Form.Group>
-
-                {/*  PRICE FORM BELOW */}
-
-                <Form.Group className="mb-3" controlId="formPrice">
-                  <Form.Label>
-                    <h4 style={{ marginTop: ".2rem", marginBottom: ".2rem" }}>
-                      Price (in Dash)
-                    </h4>
-                  </Form.Label>
-
-                  <Form.Control
-                    //onChange={this.onChange}
-                    type="text"
-                    placeholder="0.85 for example.."
-                    required
-                    isValid={this.state.validPrice}
-                    //isInvalid={!this.state.validAmt}
-                  />
-                  {/* <p className="smallertext">
-                    (i.e. Must include 2 decimal precision)
-                  </p>  */}
-                </Form.Group>
-              </Form>
-            </>
+            <></>
           )}
 
-          {!this.props.isLoginComplete ? (
+          {this.props.AboutUsDoc === "" && !this.props.isLoadingAboutUs ? (
             <>
-              <p
-                className="textsmaller"
-                style={{ marginTop: ".5rem", textAlign: "center" }}
-              >
-                <b> *Sign in to place your order!*</b>{" "}
+              <p>
+                Supported Regions: "Add Supported Regions in the <b>About Us</b>
+                "
               </p>
             </>
           ) : (
             <></>
           )}
+
+          {this.props.AboutUsDoc !== "" && !this.props.isLoadingAboutUs ? (
+            <>
+              <p>
+                Supported Regions:{" "}
+                <b>{this.props.AboutUsDoc.details.supportedRegions}</b>
+              </p>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {this.props.InventoryDoc === "" ? (
+            <p
+              className="smallertext"
+              style={{
+                textAlign: "center",
+                marginRight: "1rem",
+                marginLeft: "1rem",
+              }}
+            >
+              You must have an inventory, before you can add shipping options.
+              Please save an item to your inventory first.
+            </p>
+          ) : (
+            <></>
+          )}
+
+          {this.props.ShippingOptions.length === 0 &&
+          this.props.InventoryDoc !== "" ? (
+            <p
+              className="smallertext"
+              style={{
+                textAlign: "center",
+                marginRight: "1rem",
+                marginLeft: "1rem",
+              }}
+            >
+              Shipping is optional. If no options are added, customers can
+              submit orders without shipping.
+            </p>
+          ) : (
+            <></>
+          )}
+
+          {shipOptions}
+
+          {this.props.ShippingOptions.length >= 8 ? (
+            <>
+              <p className="textsmaller">(Limit of 8 Shipping Options)</p>
+            </>
+          ) : (
+            <></>
+          )}
+
+          <div className="d-grid gap-2">
+            {!this.props.isLoadingInventory &&
+            this.props.ShippingOptions.length <= 7 &&
+            this.props.InventoryDoc !== "" ? (
+              <>
+                <Button
+                  variant="primary"
+                  onClick={() => this.props.showModal("ShippingCreateModal")}
+                >
+                  <b style={{ fontSize: "larger" }}>Add Shipping Option</b>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="primary" disabled>
+                  <b style={{ fontSize: "larger" }}>Add Shipping Option</b>
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </>
     );

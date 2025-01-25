@@ -21,22 +21,23 @@ const registerContract = async () => {
   );
 
   const contractDocuments = {
-    store: {
+    about: {
+      //About Info
       type: 'object',
       indices: [
         {
-          //This is the FIND YOUR(Merchant) Store "About" Details 
+          //This is the FIND YOUR(Merchant) Store "About" Details -> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <- WRONG
           name: 'ownerId',
           properties: [{ $ownerId: 'asc' }],
           unique: true, //<- SINGLETON
         },
       ],
       properties: {
-        
+
         details: {
           type: 'string',
           minLength: 0,
-          maxLength: 10000, 
+          maxLength: 5120,
           position: 0,
         }, // JSON STRINGIFY AND PARSE
       },
@@ -48,7 +49,7 @@ const registerContract = async () => {
       type: 'object',
       indices: [
         {
-          //This is the FIND YOUR(Merchant) INVENTORY
+          //This is the FIND YOUR(Merchant) INVENTORY -> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <- WRONG
           name: 'ownerIdupdatedAt',
           properties: [{ $ownerId: 'asc' }, { $updatedAt: 'asc' }],
           unique: false,
@@ -58,29 +59,54 @@ const registerContract = async () => {
         items: {
           type: 'string',
           minLength: 0,
-          maxLength: 18000, 
+          maxLength: 5120, //ROUGHLY 400 CHARS FOR AN ITEM,AMOUNT ANDOVER 20 ITEMS POSSIBLE.
           position: 0,
         }, // JSON STRINGIFY AND PARSE
+        itemsImgs: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 5120,
+          position: 1,
+        }, // JSON STRINGIFY AND PARSE
 
+        // items: {
+        // type: 'array',
+        // byteArray: true,
+        // // minItems: 32,
+        // maxItems: 5120,
+        //   position: 0,
+        // }, // CBOR > JSON
 
         open: {
           type: 'boolean',
-          position: 1,
+          position: 2,
         },
-       
+        // page: {
+        //   type: 'integer',
+        //   minimum: 0,
+        //   maximum: 100,
+        //   position: 2,
+        // },
 
-        shipping: {
+        shipOpts: {
           type: 'string',
           minLength: 0,
-          maxLength: 2000, 
-          position: 2,
+          maxLength: 2000, //ROUGHLY 50 CHARS FOR AN ITEM,AMOUNT ANDOVER 20 ITEMS POSSIBLE.
+          position: 3,
         }, // JSON STRINGIFY AND PARSE
       },
 
-      required: ['items', 'open', '$createdAt', '$updatedAt'],
+      required: [
+        'items',
+        'itemsImgs',
+        'open',
+        'shipOpts',
+        '$createdAt',
+        '$updatedAt',
+      ],
       additionalProperties: false,
     },
-    
+
     order: {
       //unconfirmed Order
       type: 'object',
@@ -89,18 +115,19 @@ const registerContract = async () => {
           //
           //1) Customer Request -> their sent requests
           //
+          //-> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <-WRONG
+          //
           name: 'ownerIdtoIdcreatedAt',
           properties: [
             { $ownerId: 'asc' }, // Customer's IdentityId
-            { toId: 'asc' }, //Restricts to Single MerchantStore
+            { toId: 'asc' },
             { $createdAt: 'asc' },
           ],
           unique: false,
         },
 
         {
-          
-          //Customer Query of Customer's Request 
+          //Customer Query of Customer's Request - Any Merchant
           name: 'ownerIdcreatedAt',
           properties: [
             { $ownerId: 'asc' }, // Customer's IdentityId
@@ -125,7 +152,7 @@ const registerContract = async () => {
         cart: {
           type: 'string',
           minLength: 0,
-          maxLength: 4000, 
+          maxLength: 5000, //ROUGHLY 50 CHARS FOR AN ITEM,AMOUNT ANDOVER 20 ITEMS POSSIBLE.
           position: 0,
         }, //WE DOING JSON STRINGIFY AND PARSE
         toId: {
@@ -138,20 +165,34 @@ const registerContract = async () => {
           position: 1,
         },
         amt: {
+          //So time of request price is recorded.
           type: 'integer',
           minimum: 0,
           maximum: 1000000000000, // 10,000 Dash is max
           position: 2,
         },
-
+        shipping: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 500,
+          position: 3,
+        }, 
         msg: {
           type: 'string',
           minLength: 0,
-          maxLength: 450,
-          position: 3,
+          maxLength: 4000,
+          position: 4,
         },
       },
-      required: ['cart', 'toId', 'amt', '$createdAt', '$updatedAt'],
+      required: [
+        'cart',
+        'toId',
+        'amt',
+        'shipping',
+        'msg',
+        '$createdAt',
+        '$updatedAt',
+      ],
       additionalProperties: false,
     }, // unconfirmed Order ^^^
     confirm: {
@@ -159,16 +200,21 @@ const registerContract = async () => {
       indices: [
         {
           //Customer query of Merchant Confirm
+          // HAVE TO CHECK TO MAKE SURE THE $OWNERID IS OF THE MERCHANT AND NOT SOMEONE RANDOM <- ***
+          // well this is the merchant so they are pulling, its okay bc pulls requests first and they are your requests but can still pull a rando.. why not put in the query? -> is it because I can only do one range
           name: 'orderId',
           properties: [
-            { orderId: 'asc' }, 
-            
+            //{ $ownerId: 'asc' }, //This is the merchantID
+            { orderId: 'asc' }, //{ $ownerId: 'asc' },
+            // of the Customers Request Doc
+            //Queries using range operators must also include an orderBy statement
+            // { $createdAt: 'asc' } Should only be one. per doc this will be given an array
           ],
           unique: false,
         },
         //Merchant query of MOST RECENT
         {
-          
+          //This is the FIND YOUR POSTS -> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <-WRONG
           name: 'ownerIdcreatedAt',
           properties: [{ $ownerId: 'asc' }, { $createdAt: 'asc' }],
           unique: false,
@@ -185,63 +231,51 @@ const registerContract = async () => {
           position: 0,
         },
         toId: {
+          //so merchant can tag person ordering if they try and delete
           type: 'array',
           byteArray: true,
           minItems: 32,
           maxItems: 32,
           contentMediaType: 'application/x.dash.dpp.identifier',
-          position: 0,
+          position: 1,
         },
         amt: {
           type: 'integer',
           minimum: 0,
-          maximum: 100000000000, // 1,000 Dash is max
-          position: 1,
+          maximum: 1000000000000, // 10,000 Dash is max
+          position: 2,
         },
         cart: {
           type: 'string',
           minLength: 0,
-          maxLength: 4000, 
-          position: 2,
+          maxLength: 5000, //ROUGHLY 50 CHARS FOR AN ITEM,AMOUNT ANDOVER 20 ITEMS POSSIBLE.
+          position: 3,
         },
-      },
-      required: ['orderId', 'cart', 'amt', '$createdAt', '$updatedAt'], 
-      additionalProperties: false,
-    }, // confirm ^^^
-    reply: {
-      type: 'object',
-      indices: [
-        {
-          name: 'confirmIdcreatedAt',
-          properties: [{ confirmId: 'asc' }, { $createdAt: 'asc' }],
-          unique: false,
-        },
-        {
-          //This is the FIND YOUR POSTS 
-          name: 'ownerIdcreatedAt',
-          properties: [{ $ownerId: 'asc' }, { $createdAt: 'asc' }],
-          unique: false,
-        },
-      ],
-      properties: {
-        confirmId: {
-          type: 'array',
-          byteArray: true,
-          minItems: 32,
-          maxItems: 32,
-          contentMediaType: 'application/x.dash.dpp.identifier',
-          position: 0,
-        },
+        shipping: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 500, //ROUGHLY 50 CHARS FOR AN ITEM,AMOUNT ANDOVER 20 ITEMS POSSIBLE.
+          position: 4,
+        }, //WE DOING JSON STRINGIFY AND PARSE
         msg: {
           type: 'string',
           minLength: 0,
-          maxLength: 800,
-          position: 1,
+          maxLength: 4000,
+          position: 5,
         },
       },
-      required: ['confirmId', 'msg' '$createdAt', '$updatedAt'], //Added the created and updated so that can edit msgs in the future.
+      required: [
+        'orderId',
+        'toId',
+        'amt',
+        'cart',
+        'shipping',
+        'msg',
+        '$createdAt',
+        '$updatedAt',
+      ],
       additionalProperties: false,
-    },
+    }, 
   };
 
   const contract = await platform.contracts.create(contractDocuments, identity);

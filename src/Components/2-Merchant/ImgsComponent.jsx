@@ -169,7 +169,16 @@ class ImgsComponent extends React.Component {
             </Form.Control.Feedback>
           </Form.Group>
         </Form>
-        {this.state.validStringURL ? (
+
+        {this.props.imgStateArray.length === 5 ? (
+          <>
+            <p className="textsmaller">(Limit of 5 images per item)</p>
+          </>
+        ) : (
+          <></>
+        )}
+
+        {this.state.validStringURL && this.props.imgStateArray.length <= 4 ? (
           <>
             <div className="d-grid gap-2" style={{ marginTop: "1rem" }}>
               <Button

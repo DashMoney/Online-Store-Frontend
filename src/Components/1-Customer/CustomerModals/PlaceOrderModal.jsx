@@ -88,6 +88,26 @@ class PlaceOrderModal extends React.Component {
       }
     });
 
+    //Add the Shipping HERE**
+    let shipCost = 0;
+
+    //this.props.SelectedShippingOption !== "" &&
+    //this.props.ShippingOptions.length === 0
+
+    if (
+      this.props.ShippingOptions.length !== 0 &&
+      this.props.SelectedShippingOption !== ""
+    ) {
+      let shipOpt = this.props.ShippingOptions.find((opt) => {
+        return opt[1] === this.props.SelectedShippingOption;
+      });
+      if (shipOpt !== undefined) {
+        shipCost = shipOpt[2];
+      }
+    }
+
+    theTotal += shipCost;
+
     return (
       <h4 className="indentMembers" style={{ color: "#008de4" }}>
         <b>{handleDenomDisplay(this.props.whichNetwork, theTotal)}</b>
@@ -124,6 +144,26 @@ class PlaceOrderModal extends React.Component {
         //console.log(theTotal);
       }
     });
+    //Add the Shipping HERE**
+    let shipCost = 0;
+
+    //this.props.SelectedShippingOption !== "" &&
+    //this.props.ShippingOptions.length === 0
+
+    if (
+      this.props.ShippingOptions.length !== 0 &&
+      this.props.SelectedShippingOption !== ""
+    ) {
+      let shipOpt = this.props.ShippingOptions.find((opt) => {
+        return opt[1] === this.props.SelectedShippingOption;
+      });
+      if (shipOpt !== undefined) {
+        shipCost = shipOpt[2];
+      }
+    }
+
+    theTotal += shipCost;
+
     return Number(theTotal);
   };
 
@@ -308,6 +348,10 @@ class PlaceOrderModal extends React.Component {
     //   );
     // });
 
+    let shippingSelect = this.props.ShippingOptions.find((opt) => {
+      return opt[1] === this.props.SelectedShippingOption;
+    });
+
     return (
       <>
         <Modal
@@ -445,6 +489,31 @@ class PlaceOrderModal extends React.Component {
            </div> */}
 
             {/* <Container>{orderItems}</Container> */}
+
+            {this.props.ShippingOptions.length !== 0 &&
+            shippingSelect !== undefined ? (
+              <>
+                <h4>Shipping</h4>
+                <div
+                  className="cardTitle"
+                  style={{ marginRight: "1rem", marginLeft: ".5rem" }}
+                >
+                  <p style={{ marginBottom: "0rem" }}>{shippingSelect[0]}</p>
+                  <p //style={{ color: "#008de4" }}
+                  >
+                    <b>
+                      {handleDenomDisplay(
+                        this.props.whichNetwork,
+                        shippingSelect[2]
+                      )}
+                    </b>
+                  </p>
+                </div>
+                <p></p>
+              </>
+            ) : (
+              <></>
+            )}
 
             <p></p>
             <div className="ButtonRightNoUnderline">

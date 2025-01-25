@@ -93,6 +93,8 @@ class CreateItemPage extends React.Component {
     this.setState({
       whichVariantForm: "Single",
       variantsArray: [],
+      priceInput: 0,
+      validPrice: false,
     });
   };
   //imgStateArray
@@ -144,7 +146,7 @@ class CreateItemPage extends React.Component {
   };
 
   onChange = (event) => {
-    // console.log(event.target.value);
+    //console.log(event.target.value);
 
     //console.log(`id = ${event.target.id}`);
     if (event.target.id === "formName") {
@@ -571,6 +573,7 @@ class CreateItemPage extends React.Component {
                   </Form.Label>
 
                   <Form.Control
+                    onChange={this.onChange}
                     type="text"
                     placeholder="0.85 for example.."
                     required

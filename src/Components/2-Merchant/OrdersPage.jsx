@@ -83,6 +83,7 @@ class OrdersPage extends React.Component {
               <Orders
                 whichNetwork={this.props.whichNetwork}
                 Inventory={this.props.Inventory}
+                ShippingInitial={this.props.ShippingInitial}
                 UnconfirmedOrders={this.props.UnconfirmedOrders}
                 ConfirmedOrders={this.props.ConfirmedOrders}
                 UnconfirmedOrdersNames={this.props.UnconfirmedOrdersNames}

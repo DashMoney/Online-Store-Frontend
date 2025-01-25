@@ -2,11 +2,11 @@ import React from "react";
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
-//import Form from "react-bootstrap/Form";
+import Form from "react-bootstrap/Form";
 
 import handleDenomDisplay from "../UnitDisplay";
 
-import { IoMdArrowRoundBack } from "react-icons/io";
+//import { IoMdArrowRoundBack } from "react-icons/io";
 
 //import MerchantItem from "./MerchantItem"; //Old old
 import CartItem from "./CartItem";
@@ -18,6 +18,17 @@ class CartPage extends React.Component {
   //     selectedCategory: "",
   //   };
   // }
+  handleShippingFilter = (selected) => {
+    this.props.handleCustomerShippingFilter(selected);
+  };
+
+  onChange = (event) => {
+    if (event.target.id === "formShippingFilter") {
+      event.stopPropagation();
+      this.handleShippingFilter(event.target.value);
+    }
+  };
+
   handleTotalItems = () => {
     let numOfItems = 0;
     this.props.CartItems.forEach((tuple) => {
@@ -60,6 +71,26 @@ class CartPage extends React.Component {
         //console.log(theTotal);
       }
     });
+
+    //Add the Shipping HERE**
+    let shipCost = 0;
+
+    //this.props.SelectedShippingOption !== "" &&
+    //this.props.ShippingOptions.length === 0
+
+    if (
+      this.props.ShippingOptions.length !== 0 &&
+      this.props.SelectedShippingOption !== ""
+    ) {
+      let shipOpt = this.props.ShippingOptions.find((opt) => {
+        return opt[1] === this.props.SelectedShippingOption;
+      });
+      if (shipOpt !== undefined) {
+        shipCost = shipOpt[2];
+      }
+    }
+
+    theTotal += shipCost;
 
     return (
       <h4 className="indentMembers" style={{ color: "#008de4" }}>
@@ -155,6 +186,30 @@ class CartPage extends React.Component {
       );
     });
 
+    let Options = this.props.ShippingOptions.map((opt, index) => {
+      //console.log(opt);
+      let optDisplay = `${opt[0]}  ${handleDenomDisplay(
+        this.props.whichNetwork,
+        opt[2]
+      )}`;
+      return (
+        <option value={opt[1]} key={index} style={{ fontWeight: "bold" }}>
+          {optDisplay}
+        </option>
+      );
+    });
+
+    let formBkg;
+    let formText;
+
+    if (this.props.mode === "primary") {
+      formBkg = "light";
+      formText = "dark";
+    } else {
+      formBkg = "dark";
+      formText = "light";
+    }
+
     return (
       <>
         <>
@@ -189,24 +244,105 @@ class CartPage extends React.Component {
             ) : (
               <></>
             )}
+            {/* Shipping Options - FILTER FORM BELOW */}
+            {/* Must check if shipOpts is > 0 */}
+            {/* Inform to select shipping options*/}
+            {/* THEN the total is displayed */}
+
+            {/*  <Form
+          noValidate
+          // onSubmit={this.handleSubmitClick}
+          onChange={this.onChange}
+        >
+          
+          <Form.Group className="mb-3" controlId="formOrderFilter">
+             <Form.Label>
+            <h5 style={{ marginTop: ".5rem", marginBottom: ".2rem" }}>
+              Payment Schedule
+            </h5>
+          </Form.Label> 
+
+            <Form.Select
+              style={{ fontWeight: "bold" }}
+              // bg={formBkg}
+              //text={formText}
+              data-bs-theme={formBkg}
+              defaultValue={this.props.DisplayOrders}
+            >
+            {Options}
+              
+            </Form.Select>
+          </Form.Group>
+        </Form>
+ */}
+
             {this.props.CartItems.length === 0 ? (
               <p>(Items you add to cart will appear here)</p>
             ) : (
               <>
                 {CartItems}
                 <p></p>
+                {this.props.CartItems.length > 0 &&
+                this.props.ShippingOptions.length !== 0 &&
+                this.props.isLoginComplete &&
+                !this.props.isLoadingShoppingCart ? (
+                  <>
+                    <Form
+                      noValidate
+                      // onSubmit={this.handleSubmitClick}
+                      onChange={this.onChange}
+                    >
+                      {/* ORDER FILTER FORM BELOW */}
+
+                      <Form.Group
+                        className="mb-3"
+                        controlId="formShippingFilter"
+                      >
+                        {/* <Form.Label>
+            <h5 style={{ marginTop: ".5rem", marginBottom: ".2rem" }}>
+              Payment Schedule
+            </h5>
+          </Form.Label> */}
+
+                        <Form.Select
+                          style={{ fontWeight: "bold" }}
+                          // bg={formBkg}
+                          //text={formText}
+                          data-bs-theme={formBkg}
+                          defaultValue={this.props.SelectedShippingOption}
+                        >
+                          <option value={""}>Select Shipping Option</option>
+                          {Options}
+                        </Form.Select>
+                      </Form.Group>
+                    </Form>
+                    <p></p>
+                  </>
+                ) : (
+                  <></>
+                )}
                 <div className="cartTotal">
                   <h4>
                     <b>Total</b> ({this.handleTotalItems()})<b>:</b>
                   </h4>
-
-                  {this.handleTotal()}
+                  {this.props.SelectedShippingOption !== "" ||
+                  this.props.ShippingOptions.length === 0 ? (
+                    <>{this.handleTotal()}</>
+                  ) : (
+                    <>
+                      <span> </span>
+                    </>
+                  )}
                 </div>
               </>
             )}
+
             <p></p>
             {this.props.CartItems.length > 0 &&
+            this.props.CartItems.length <= 10 &&
             this.props.isLoginComplete &&
+            (this.props.SelectedShippingOption !== "" ||
+              this.props.ShippingOptions.length === 0) &&
             !this.props.isLoadingShoppingCart ? (
               <>
                 <div
@@ -234,14 +370,18 @@ class CartPage extends React.Component {
                 <p></p>
               </>
             )}
-            {!this.props.isLoginComplete?<>
-              <p
-                className="textsmaller"
-                style={{ marginTop: ".5rem", textAlign: "center" }}
-              >
-                <b> *Sign in to place your order!*</b>{" "}
-              </p>
-            </>:<></>}
+            {!this.props.isLoginComplete ? (
+              <>
+                <p
+                  className="textsmaller"
+                  style={{ marginTop: ".5rem", textAlign: "center" }}
+                >
+                  <b> *Sign in to place your order!*</b>{" "}
+                </p>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         </>{" "}
         {/* This is to close the LoadingOrder */}

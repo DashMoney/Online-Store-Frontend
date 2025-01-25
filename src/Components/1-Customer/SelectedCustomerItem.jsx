@@ -425,7 +425,9 @@ class SelectedCustomerItem extends React.Component {
           )}
 
           <p></p>
-          {this.props.item.active && (variant[1] > 0 || variant[1] === "") ? (
+          {this.props.CartItems.length < 10 &&
+          this.props.item.active &&
+          (variant[1] > 0 || variant[1] === "") ? (
             <>
               <div className="d-grid gap-2">
                 <Button

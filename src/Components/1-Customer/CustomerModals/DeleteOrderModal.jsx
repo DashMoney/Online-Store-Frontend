@@ -72,6 +72,27 @@ class DeleteOrderModal extends React.Component {
       }
     });
 
+    //this.props.ShippingInitial
+    //Add the Shipping HERE**
+    let shipCost = 0;
+
+    //this.props.SelectedShippingOption !== "" &&
+    //this.props.ShippingOptions.length === 0
+
+    if (
+      this.props.ShippingInitial.length !== 0 &&
+      this.props.order.shipping !== ""
+    ) {
+      let shipOpt = this.props.ShippingInitial.find((opt) => {
+        return opt[1] === this.props.order.shipping;
+      });
+      if (shipOpt !== undefined) {
+        shipCost = shipOpt[2];
+      }
+    }
+
+    theTotal += shipCost;
+
     return (
       <h4 className="indentMembers" style={{ color: "#008de4" }}>
         <b>{handleDenomDisplay(this.props.whichNetwork, theTotal)}</b>
@@ -186,6 +207,12 @@ class DeleteOrderModal extends React.Component {
       variantRows.push(addVariantRow);
     });
 
+    //this.props.order.shipping
+
+    let shippingSelect = this.props.ShippingInitial.find((opt) => {
+      return opt[1] === this.props.order.shipping;
+    });
+
     return (
       <>
         <Modal
@@ -282,9 +309,34 @@ class DeleteOrderModal extends React.Component {
                 </Table>
               </>
             )}
-            {/* Amount */}
+
+            {this.props.ShippingInitial.length !== 0 &&
+            shippingSelect !== undefined ? (
+              <>
+                <h4>Shipping</h4>
+                <div
+                  className="cardTitle"
+                  style={{ marginRight: "1rem", marginLeft: ".5rem" }}
+                >
+                  <p style={{ marginBottom: "0rem" }}>{shippingSelect[0]}</p>
+                  <p //style={{ color: "#008de4" }}
+                  >
+                    <b>
+                      {handleDenomDisplay(
+                        this.props.whichNetwork,
+                        shippingSelect[2]
+                      )}
+                    </b>
+                  </p>
+                </div>
+                <p></p>
+              </>
+            ) : (
+              <></>
+            )}
 
             <p></p>
+            {/* Amount */}
             <div className="ButtonRightNoUnderline">
               <h4>
                 <b>Total</b> ({this.handleTotalItems()})<b>:</b>

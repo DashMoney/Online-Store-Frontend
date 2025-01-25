@@ -117,6 +117,7 @@ class YourOrdersPage extends React.Component {
                 isLoadingInventory={this.props.isLoadingInventory}
                 isLoadingOrders={this.props.isLoadingOrders}
                 Inventory={this.props.Inventory}
+                ShippingInitial={this.props.ShippingInitial}
                 UnconfirmedOrders={this.props.UnconfirmedOrders}
                 ConfirmedOrders={this.props.ConfirmedOrders}
                 OrderReplies={this.props.OrderReplies}
