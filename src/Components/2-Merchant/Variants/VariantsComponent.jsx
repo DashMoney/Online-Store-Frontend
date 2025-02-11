@@ -136,12 +136,12 @@ class VariantsComponent extends React.Component {
     ]);
 
     document.getElementById("formControlReset").reset();
-  //   <Form
-  //   id="formControlReset"
-  //   noValidate
-  //   //onubmit={this.submitAndResetForm}
-  //   onChange={this.onChange}
-  // >
+    //   <Form
+    //   id="formControlReset"
+    //   noValidate
+    //   //onubmit={this.submitAndResetForm}
+    //   onChange={this.onChange}
+    // >
     //https://stackoverflow.com/questions/43922508/clear-and-reset-form-input-fields
 
     this.setState({
@@ -308,9 +308,19 @@ class VariantsComponent extends React.Component {
                   </p>  */}
           </Form.Group>
         </Form>
+
+        {this.props.variantsArray.length > 7 ? (
+          <>
+            <p className="textsmaller">(Limit of 8 variant per item)</p>
+          </>
+        ) : (
+          <></>
+        )}
+
         {this.state.validLabel &&
         this.state.validPrice &&
-        this.state.validQty ? (
+        this.state.validQty &&
+        this.props.variantsArray.length <= 7 ? (
           <>
             <div className="d-grid gap-2" style={{ marginTop: "1rem" }}>
               <Button

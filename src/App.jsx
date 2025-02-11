@@ -1375,6 +1375,9 @@ class App extends React.Component {
     }
   };
 
+  //Add function to getInventory -> combines  items&itemImgs to items
+  //-> like shuffling cards
+
   getInventory = () => {
     //console.log("Calling getInventory");
     // if (!this.state.isLoadingInventory) {
@@ -1409,6 +1412,7 @@ class App extends React.Component {
             () => this.inventoryRace()
           );
         } else {
+          //REFACTOR - THERE WILL ONLY RETURN A SINGLE INVENTORY DOC TO REMOVE docArray and just use returnedDoc ->
           let docArray = [];
           //console.log("Getting Inventory");
 
@@ -1420,6 +1424,18 @@ class App extends React.Component {
             //   "base64"
             // ).toJSON();
             returnedDoc.items = JSON.parse(returnedDoc.items);
+            returnedDoc.itemsImgs = JSON.parse(returnedDoc.itemsImgs);
+
+            let combinedItems = returnedDoc.items.map((item, index) => {
+              // item.imgArray = [];
+              // item.imgArray.push(returnedDoc.itemsImgs[index]);
+              item.imgArray = returnedDoc.itemsImgs[index];
+              return item;
+            });
+
+            returnedDoc.items = combinedItems;
+            delete returnedDoc.itemsImgs;
+
             console.log("newInventory:\n", returnedDoc);
             docArray = [...docArray, returnedDoc];
           }
@@ -1748,6 +1764,7 @@ class App extends React.Component {
       .catch((e) => {
         this.setState({
           isLoadingMerchantName: false,
+          merchantNameDocVerified: false,
         });
         console.error("Something went wrong getting merchant name:\n", e);
       })
@@ -1922,9 +1939,22 @@ class App extends React.Component {
       } else {
         identity = await platform.identities.get(this.state.identity);
       }
+      let itemsSplit = [];
+      let itemsImgsSplit = [];
+
+      this.state.Inventory.forEach((item) => {
+        itemsImgsSplit.push(item.imgArray);
+        delete item.imgArray; //This delete is necessay.
+
+        itemsSplit.push(item);
+        //console.log(item);
+      });
+
       let inventoryProperties = {
-        items: JSON.stringify(this.state.Inventory),
-        itemsImgs: "",
+        items: JSON.stringify(itemsSplit),
+        itemsImgs: JSON.stringify(itemsImgsSplit),
+        more: "",
+        excess: "",
         open: true,
         shipOpts: "[]",
       };
@@ -1963,7 +1993,21 @@ class App extends React.Component {
         //   returnedDoc.replyId,
         //   "base64"
         // ).toJSON();
+
         returnedDoc.items = JSON.parse(returnedDoc.items);
+        returnedDoc.itemsImgs = JSON.parse(returnedDoc.itemsImgs);
+
+        let combinedItems = returnedDoc.items.map((item, index) => {
+          // item.imgArray = [];
+          // item.imgArray.push(returnedDoc.itemsImgs[index]);
+
+          item.imgArray = returnedDoc.itemsImgs[index];
+
+          return item;
+        });
+
+        returnedDoc.items = combinedItems;
+        delete returnedDoc.itemsImgs;
 
         console.log("InventoryDocument:\n", returnedDoc);
 
@@ -2014,8 +2058,19 @@ class App extends React.Component {
         }
       );
 
+      let itemsSplit = [];
+      let itemsImgsSplit = [];
+
+      this.state.Inventory.forEach((item) => {
+        itemsImgsSplit.push(item.imgArray);
+        delete item.imgArray;
+        //console.log(item);
+        itemsSplit.push(item);
+      });
+
       if (this.state.Inventory !== this.state.InventoryInitial) {
-        document.set("items", JSON.stringify(this.state.Inventory));
+        document.set("items", JSON.stringify(itemsSplit));
+        document.set("itemsImgs", JSON.stringify(itemsImgsSplit));
       }
 
       // if (this.state.SelectedItem.open !== itemObject.open) {
@@ -2043,6 +2098,17 @@ class App extends React.Component {
         let returnedDoc = d.toJSON();
 
         returnedDoc.items = JSON.parse(returnedDoc.items);
+        returnedDoc.itemsImgs = JSON.parse(returnedDoc.itemsImgs);
+
+        let combinedItems = returnedDoc.items.map((item, index) => {
+          // item.imgArray = [];
+          // item.imgArray.push(returnedDoc.itemsImgs[index]);
+          item.imgArray = returnedDoc.itemsImgs[index];
+          return item;
+        });
+
+        returnedDoc.items = combinedItems;
+        delete returnedDoc.itemsImgs;
 
         console.log("Edited Inventory:\n", returnedDoc);
 
@@ -4933,6 +4999,8 @@ class App extends React.Component {
                         whichNetwork={this.state.whichNetwork}
                         isLoadingOrders={this.state.isLoadingOrders}
                         isLoadingShoppingCart={this.state.isLoadingShoppingCart}
+                        isLoadingAboutUs={this.state.isLoadingAboutUs}
+                        AboutUsDoc={this.state.AboutUsDoc}
                         identity={this.state.identity}
                         identityInfo={this.state.identityInfo}
                         handleSelectedPage={this.handleSelectedPage}
@@ -4944,6 +5012,9 @@ class App extends React.Component {
                         }
                         SelectedShippingOption={
                           this.state.SelectedShippingOption
+                        }
+                        pullInitialTriggerABOUTUS={
+                          this.pullInitialTriggerABOUTUS
                         }
                         //MerchantNameDoc={this.state.MerchantNameDoc}
                         uniqueName={uniqueName}

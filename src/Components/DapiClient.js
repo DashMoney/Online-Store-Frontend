@@ -26,7 +26,7 @@ export default function dapiClient(
         contractId: "GWRSAVFMjXx8HpQFaNJMqBV7MBgMK4br5UESsB4S31Ec",
       },
       ONLINESTOREContract: {
-        contractId: "E1pambYerWzGaGdQVQcf9tyL5qRKh9mKgiYW9mETupjQ", //"C7w3BAZHvoijzDrRv9MvsvAGgqdSBS2Nbc341kkrpovV",
+        contractId: "DpMzroPo7NFXmACmAZHhsdzPTVCPxNG71PRe17xH7H9", //"E1pambYerWzGaGdQVQcf9tyL5qRKh9mKgiYW9mETupjQ", //"C7w3BAZHvoijzDrRv9MvsvAGgqdSBS2Nbc341kkrpovV",
       },
       ProxyContract: {
         contractId: "7Y342Md8nmw5qFBwBCmpnrbqV9ELhgUfRdNpiLjYkzLD",

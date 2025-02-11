@@ -373,6 +373,7 @@ class CreateItemPage extends React.Component {
 
         extraInfo: this.state.extraInfoInput,
         active: this.state.active,
+        //reviews: this.state.allowReviews, //true
       };
     } else {
       newItem = {
@@ -388,6 +389,7 @@ class CreateItemPage extends React.Component {
 
         extraInfo: this.state.extraInfoInput,
         active: this.state.active,
+        //reviews: this.state.allowReviews, //true
       };
     }
 

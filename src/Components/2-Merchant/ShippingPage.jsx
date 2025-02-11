@@ -208,9 +208,9 @@ class ShippingPage extends React.Component {
 
           {shipOptions}
 
-          {this.props.ShippingOptions.length >= 8 ? (
+          {this.props.ShippingOptions.length >= 6 ? (
             <>
-              <p className="textsmaller">(Limit of 8 Shipping Options)</p>
+              <p className="textsmaller">(Limit of 6 Shipping Options)</p>
             </>
           ) : (
             <></>
@@ -218,7 +218,7 @@ class ShippingPage extends React.Component {
 
           <div className="d-grid gap-2">
             {!this.props.isLoadingInventory &&
-            this.props.ShippingOptions.length <= 7 &&
+            this.props.ShippingOptions.length <= 5 &&
             this.props.InventoryDoc !== "" ? (
               <>
                 <Button

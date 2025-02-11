@@ -18,6 +18,20 @@ class CartPage extends React.Component {
   //     selectedCategory: "",
   //   };
   // }
+  //https://stackoverflow.com/questions/37620694/how-to-scroll-to-bottom-in-react
+  scrollToTop = () => {
+    this.positionStart.scrollIntoView({
+      behavior: "instant",
+      block: "start",
+      inline: "nearest",
+    });
+  };
+
+  componentDidMount() {
+    this.scrollToTop();
+    this.props.pullInitialTriggerABOUTUS();
+  }
+
   handleShippingFilter = (selected) => {
     this.props.handleCustomerShippingFilter(selected);
   };
@@ -215,6 +229,9 @@ class CartPage extends React.Component {
         <>
           <div
             className="bodytext" //bodytextnotop
+            ref={(el) => {
+              this.positionStart = el;
+            }}
           >
             <div
               className="d-grid gap-2"
@@ -231,7 +248,7 @@ class CartPage extends React.Component {
               </Button>
             </div>
             <h2>Your Cart</h2>
-            {this.props.isLoadingShoppingCart ? (
+            {this.props.isLoadingAboutUs || this.props.isLoadingShoppingCart ? (
               <>
                 <p></p>
                 <div id="spinner">
@@ -281,11 +298,32 @@ class CartPage extends React.Component {
             ) : (
               <>
                 {CartItems}
+
+                {this.props.CartItems.length >= 10 ? (
+                  <>
+                    <p className="textsmaller">(Limit of 10 items per order)</p>
+                  </>
+                ) : (
+                  <></>
+                )}
+
+                {this.props.AboutUsDoc !== "" &&
+                !this.props.isLoadingAboutUs ? (
+                  <>
+                    <h6 style={{ textAlign: "center" }}>
+                      Supported Regions:{" "}
+                      <b>{this.props.AboutUsDoc.details.supportedRegions}</b>
+                    </h6>
+                  </>
+                ) : (
+                  <></>
+                )}
                 <p></p>
                 {this.props.CartItems.length > 0 &&
                 this.props.ShippingOptions.length !== 0 &&
                 this.props.isLoginComplete &&
-                !this.props.isLoadingShoppingCart ? (
+                !this.props.isLoadingShoppingCart &&
+                !this.props.isLoadingAboutUs ? (
                   <>
                     <Form
                       noValidate

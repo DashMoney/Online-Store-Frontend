@@ -77,14 +77,8 @@ class YourInventoryPage extends React.Component {
           )}
 
           <div className="d-grid gap-2">
-            {this.props.isLoadingInventory &&
-            this.props.Inventory.length <= 12 ? (
-              <>
-                <Button variant="primary" disabled>
-                  <b style={{ fontSize: "larger" }}>Add Item</b>
-                </Button>
-              </>
-            ) : (
+            {!this.props.isLoadingInventory &&
+            this.props.Inventory.length <= 14 ? (
               <>
                 <Button
                   variant="primary"
@@ -93,8 +87,21 @@ class YourInventoryPage extends React.Component {
                   <b style={{ fontSize: "larger" }}>Add Item</b>
                 </Button>
               </>
+            ) : (
+              <>
+                <Button variant="primary" disabled>
+                  <b style={{ fontSize: "larger" }}>Add Item</b>
+                </Button>
+              </>
             )}
           </div>
+          {this.props.Inventory.length > 14 ? (
+            <>
+              <p className="textsmaller">(Limit of 15 items)</p>
+            </>
+          ) : (
+            <></>
+          )}
 
           {this.props.isLoadingInventory ? (
             <>

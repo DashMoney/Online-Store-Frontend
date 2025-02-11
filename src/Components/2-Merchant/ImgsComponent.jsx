@@ -44,7 +44,7 @@ class ImgsComponent extends React.Component {
   };
 
   stringURLValidate = (stringURL) => {
-    let regex = /^\S.{1,448}\S$/;
+    let regex = /^\S{1,250}$/;
     let valid = regex.test(stringURL);
 
     if (valid) {
@@ -54,7 +54,7 @@ class ImgsComponent extends React.Component {
         validStringURL: true,
       });
     } else {
-      if (stringURL.length > 450) {
+      if (stringURL.length > 250) {
         this.setState({
           stringURLInput: stringURL,
           tooLongStringURLError: true,
@@ -144,7 +144,7 @@ class ImgsComponent extends React.Component {
           id="formImgReset"
           noValidate
           //onSubmit={this.handleSubmitClick}
-          onChange={this.onChange}
+          //onChange={this.onChange}
         >
           {/* URL FORM BELOW */}
           <Form.Group
@@ -160,7 +160,7 @@ class ImgsComponent extends React.Component {
               placeholder="Enter image URL"
               defaultValue={this.state.stringURLInput}
               //required
-              isInvalid={this.state.tooLongURLError}
+              isInvalid={this.state.tooLongStringURLError}
               isValid={this.state.validURL}
             />
             <p></p>
