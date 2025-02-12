@@ -26,7 +26,7 @@ const registerContract = async () => {
       type: 'object',
       indices: [
         {
-          //This is the FIND YOUR(Merchant) Store "About" Details -> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <- WRONG
+          //This is the FIND YOUR(Merchant) Store "About" Details 
           name: 'ownerId',
           properties: [{ $ownerId: 'asc' }],
           unique: true, //<- SINGLETON
@@ -49,7 +49,7 @@ const registerContract = async () => {
       type: 'object',
       indices: [
         {
-          //This is the FIND YOUR(Merchant) INVENTORY -> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <- WRONG
+          //This is the FIND YOUR(Merchant) INVENTORY 
           name: 'ownerIdupdatedAt',
           properties: [{ $ownerId: 'asc' }, { $updatedAt: 'asc' }],
           unique: false,
@@ -69,25 +69,24 @@ const registerContract = async () => {
           position: 1,
         }, // JSON STRINGIFY AND PARSE
 
-        // items: {
-        // type: 'array',
-        // byteArray: true,
-        // // minItems: 32,
-        // maxItems: 5120,
-        //   position: 0,
-        // }, // CBOR > JSON
+        more: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 5120,
+          position: 2,
+        }, // JSON STRINGIFY AND PARSE
+        excess: {
+          type: 'string',
+          minLength: 0,
+          maxLength: 5120,
+          position: 3,
+        }, // JSON STRINGIFY AND PARSE
 
         open: {
           type: 'boolean',
           position: 2,
         },
-        // page: {
-        //   type: 'integer',
-        //   minimum: 0,
-        //   maximum: 100,
-        //   position: 2,
-        // },
-
+        
         shipOpts: {
           type: 'string',
           minLength: 0,
@@ -99,6 +98,8 @@ const registerContract = async () => {
       required: [
         'items',
         'itemsImgs',
+        'more',
+        'excess',
         'open',
         'shipOpts',
         '$createdAt',
@@ -115,8 +116,7 @@ const registerContract = async () => {
           //
           //1) Customer Request -> their sent requests
           //
-          //-> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <-WRONG
-          //
+          
           name: 'ownerIdtoIdcreatedAt',
           properties: [
             { $ownerId: 'asc' }, // Customer's IdentityId
@@ -180,7 +180,7 @@ const registerContract = async () => {
         msg: {
           type: 'string',
           minLength: 0,
-          maxLength: 4000,
+          maxLength: 5000,
           position: 4,
         },
       },
@@ -201,20 +201,18 @@ const registerContract = async () => {
         {
           //Customer query of Merchant Confirm
           // HAVE TO CHECK TO MAKE SURE THE $OWNERID IS OF THE MERCHANT AND NOT SOMEONE RANDOM <- ***
-          // well this is the merchant so they are pulling, its okay bc pulls requests first and they are your requests but can still pull a rando.. why not put in the query? -> is it because I can only do one range
+          
           name: 'orderId',
           properties: [
-            //{ $ownerId: 'asc' }, //This is the merchantID
-            { orderId: 'asc' }, //{ $ownerId: 'asc' },
-            // of the Customers Request Doc
-            //Queries using range operators must also include an orderBy statement
-            // { $createdAt: 'asc' } Should only be one. per doc this will be given an array
+            
+            { orderId: 'asc' }, 
+            
           ],
           unique: false,
         },
         //Merchant query of MOST RECENT
         {
-          //This is the FIND YOUR POSTS -> DO i NEED THIS OR DOES IT AUTOMATICALLY HAVE THE OWNERID?? -> I THINK IT DOES.. <-WRONG
+          
           name: 'ownerIdcreatedAt',
           properties: [{ $ownerId: 'asc' }, { $createdAt: 'asc' }],
           unique: false,

@@ -1,7 +1,7 @@
-//NEED THE QUERY here and its a simple query because it should return empty!
 import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Alert from "react-bootstrap/Alert";
 
 import Spinner from "react-bootstrap/Spinner";
 import CloseButton from "react-bootstrap/CloseButton";
@@ -11,17 +11,6 @@ import Table from "react-bootstrap/Table";
 import handleDenomDisplay from "../../UnitDisplay";
 
 import simpleDate from "../../DateDisplay";
-
-//import "./ConfirmPaymentModal.css";
-
-// import dapiClientNoWallet from "../../DapiClientNoWallet";
-
-// import Dash from "dash";
-
-// const {
-//   // Essentials: { Buffer },
-//   PlatformProtocol: { Identifier },
-// } = Dash;
 
 class ConfirmOrderModal extends React.Component {
   constructor(props) {
@@ -315,6 +304,16 @@ class ConfirmOrderModal extends React.Component {
       return opt[1] === this.props.order.shipping;
     });
 
+    let wasInventoryDocUpdated = true;
+    //if amtVerified does not match
+    if (!amtVerified) {
+      if (this.props.ShippingInitial.$updatedAt < this.props.order.$updatedAt) {
+        wasInventoryDocUpdated = false;
+      }
+      // if not before then DENY === amtVerified=false && asInventoryDocUpdated=false
+      // if after then allow&ALERT === amtVerified=false && asInventoryDocUpdated=true
+    }
+
     return (
       <>
         <Modal
@@ -439,11 +438,66 @@ class ConfirmOrderModal extends React.Component {
                 <b>Total</b> ({this.handleTotalItems()})<b>:</b>
               </h4>
 
-              {this.handleTotal()}
+              {amtVerified ? (
+                <> {this.handleTotal()}</>
+              ) : (
+                <>
+                  <h4 className="indentMembers" style={{ color: "#008de4" }}>
+                    <b>
+                      {handleDenomDisplay(
+                        this.props.whichNetwork,
+                        this.props.order.amt
+                      )}
+                    </b>
+                  </h4>
+                </>
+              )}
             </div>
             <p></p>
 
-            {!amtVerified ? (
+            {!amtVerified && wasInventoryDocUpdated ? (
+              <>
+                <Alert variant="danger">
+                  <Alert.Heading>Order Amount (Warning)</Alert.Heading>
+                  <p>
+                    The <b>Total Amount</b> from the <b>Order does Not</b> match
+                    the <b>current Total Cost</b>.
+                  </p>
+                  <p>
+                    Order was made prior to the latest Inventory update/edit.
+                  </p>
+                  <p style={{ textAlign: "center" }}>
+                    <b>*Confirm Only after You have Verified.*</b>
+                  </p>
+                </Alert>
+
+                <p></p>
+              </>
+            ) : (
+              <></>
+            )}
+            {!amtVerified && !wasInventoryDocUpdated ? (
+              <>
+                <Alert variant="danger">
+                  <Alert.Heading>Order Amount Failure</Alert.Heading>
+                  <p>
+                    The <b>Total Amount</b> from the <b>Order does Not</b>
+                    match the <b>current Total Cost</b>.
+                  </p>
+                  <p>
+                    Order was <b>Not</b> made prior to the latest Inventory
+                    update/edit.
+                  </p>
+                  <p style={{ textAlign: "center" }}>
+                    <b>*Customer must resubmit order properly*</b>
+                  </p>
+                </Alert>
+              </>
+            ) : (
+              <></>
+            )}
+
+            {/* {!amtVerified ? (
               <>
                 <p style={{ color: "red" }}>
                   The amount from the order does not match the current item
@@ -454,7 +508,7 @@ class ConfirmOrderModal extends React.Component {
               </>
             ) : (
               <></>
-            )}
+            )} */}
             {!qtyVerified ? (
               <>
                 <p style={{ color: "red" }}>
@@ -482,9 +536,33 @@ class ConfirmOrderModal extends React.Component {
                   )}
                 </>
               ) : (
-                <Button variant="primary" disabled>
-                  <b>Confirm</b>
-                </Button>
+                // <Button variant="primary" disabled>
+                //   <b>Confirm</b>
+                // </Button>
+                <>
+                  {qtyVerified && wasInventoryDocUpdated ? (
+                    <>
+                      {this.state.loadTime >= 1 ? (
+                        <Button variant="primary" disabled>
+                          <b>Verify and Confirm ({this.state.loadTime})</b>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="primary"
+                          onClick={this.handleSubmitClick}
+                        >
+                          <b>Verify and Confirm</b>
+                        </Button>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="primary" disabled>
+                        <b>Unable to Confirm</b>
+                      </Button>
+                    </>
+                  )}
+                </>
               )}
             </>
           </Modal.Footer>
