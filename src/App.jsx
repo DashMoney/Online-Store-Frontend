@@ -1944,7 +1944,8 @@ class App extends React.Component {
 
       this.state.Inventory.forEach((item) => {
         itemsImgsSplit.push(item.imgArray);
-        delete item.imgArray; //This delete is necessay.
+        //delete item.imgArray; //This delete is necessary.
+        // Actually this^^ delete breaks the MerchantItem as it transtions from frontend state to platform document.
 
         itemsSplit.push(item);
         //console.log(item);
@@ -2011,12 +2012,15 @@ class App extends React.Component {
 
         console.log("InventoryDocument:\n", returnedDoc);
 
-        this.setState({
-          InventoryDoc: returnedDoc,
-          Inventory: returnedDoc.items,
-          InventoryInitial: returnedDoc.items,
-          isLoadingInventory: false,
-        });
+        this.setState(
+          {
+            InventoryDoc: returnedDoc,
+            Inventory: returnedDoc.items,
+            InventoryInitial: returnedDoc.items,
+            isLoadingInventory: false,
+          },
+          () => this.loadIdentityCredits()
+        );
       })
       .catch((e) => {
         console.error("Something went wrong with inventory creation:\n", e);
@@ -2063,7 +2067,7 @@ class App extends React.Component {
 
       this.state.Inventory.forEach((item) => {
         itemsImgsSplit.push(item.imgArray);
-        delete item.imgArray;
+
         //console.log(item);
         itemsSplit.push(item);
       });
@@ -2964,99 +2968,99 @@ class App extends React.Component {
       .finally(() => client.disconnect());
   };
 
-  handleMerchantReplyModalShow = (theConfirm, nameDoc) => {
-    this.setState(
-      {
-        SelectedConfirm: theConfirm,
-        SelectedReplyNameDoc: nameDoc,
-      },
-      () => this.showModal("MerchantReplyModal")
-    );
-  };
+  // handleMerchantReplyModalShow = (theConfirm, nameDoc) => {
+  //   this.setState(
+  //     {
+  //       SelectedConfirm: theConfirm,
+  //       SelectedReplyNameDoc: nameDoc,
+  //     },
+  //     () => this.showModal("MerchantReplyModal")
+  //   );
+  // };
 
   //confirmId createdAt - query
   // confirmId && msg - attributes
 
-  createMerchantReply = (replyMsgComment) => {
-    //console.log("Called Merchant Message Submit: ", replyMsgComment);
+  // createMerchantReply = (replyMsgComment) => {
+  //   //console.log("Called Merchant Message Submit: ", replyMsgComment);
 
-    this.setState({
-      isLoadingOrders: true,
-    });
+  //   this.setState({
+  //     isLoadingOrders: true,
+  //   });
 
-    const client = new Dash.Client(
-      dapiClient(
-        this.state.whichNetwork,
-        this.state.mnemonic,
-        this.state.skipSynchronizationBeforeHeight
-      )
-    );
+  //   const client = new Dash.Client(
+  //     dapiClient(
+  //       this.state.whichNetwork,
+  //       this.state.mnemonic,
+  //       this.state.skipSynchronizationBeforeHeight
+  //     )
+  //   );
 
-    const submitMsgDoc = async () => {
-      const { platform } = client;
+  //   const submitMsgDoc = async () => {
+  //     const { platform } = client;
 
-      let identity = "";
-      if (this.state.identityRaw !== "") {
-        identity = this.state.identityRaw;
-      } else {
-        identity = await platform.identities.get(this.state.identity);
-      }
+  //     let identity = "";
+  //     if (this.state.identityRaw !== "") {
+  //       identity = this.state.identityRaw;
+  //     } else {
+  //       identity = await platform.identities.get(this.state.identity);
+  //     }
 
-      const replyProperties = {
-        confirmId: this.state.SelectedConfirm.$id,
-        msg: replyMsgComment,
-      };
-      //console.log('Reply to Create: ', replyProperties);
+  //     const replyProperties = {
+  //       confirmId: this.state.SelectedConfirm.$id,
+  //       msg: replyMsgComment,
+  //     };
+  //     //console.log('Reply to Create: ', replyProperties);
 
-      // Create the note document
-      const itemDocument = await platform.documents.create(
-        "ONLINESTOREContract.reply",
-        identity,
-        replyProperties
-      );
+  //     // Create the note document
+  //     const itemDocument = await platform.documents.create(
+  //       "ONLINESTOREContract.reply",
+  //       identity,
+  //       replyProperties
+  //     );
 
-      //############################################################
-      //This below disconnects the document sending..***
+  //     //############################################################
+  //     //This below disconnects the document sending..***
 
-      //return itemDocument;
+  //     //return itemDocument;
 
-      //This is to disconnect the Document Creation***
-      //############################################################
+  //     //This is to disconnect the Document Creation***
+  //     //############################################################
 
-      const documentBatch = {
-        create: [itemDocument], // Document(s) to create
-      };
+  //     const documentBatch = {
+  //       create: [itemDocument], // Document(s) to create
+  //     };
 
-      await platform.documents.broadcast(documentBatch, identity);
-      return itemDocument;
-    };
+  //     await platform.documents.broadcast(documentBatch, identity);
+  //     return itemDocument;
+  //   };
 
-    submitMsgDoc()
-      .then((d) => {
-        let returnedDoc = d.toJSON();
-        console.log("Document:\n", returnedDoc);
+  //   submitMsgDoc()
+  //     .then((d) => {
+  //       let returnedDoc = d.toJSON();
+  //       console.log("Document:\n", returnedDoc);
 
-        returnedDoc.confirmId = Identifier.from(
-          returnedDoc.confirmId,
-          "base64"
-        ).toJSON();
+  //       returnedDoc.confirmId = Identifier.from(
+  //         returnedDoc.confirmId,
+  //         "base64"
+  //       ).toJSON();
 
-        this.setState(
-          {
-            OrderReplies: [...this.state.OrderReplies, returnedDoc],
-            isLoadingOrders: false,
-          },
-          () => this.loadIdentityCredits()
-        );
-      })
-      .catch((e) => {
-        console.error(
-          "Something went wrong with Merchant Reply Msg creation:\n",
-          e
-        );
-      })
-      .finally(() => client.disconnect());
-  };
+  //       this.setState(
+  //         {
+  //           OrderReplies: [...this.state.OrderReplies, returnedDoc],
+  //           isLoadingOrders: false,
+  //         },
+  //         () => this.loadIdentityCredits()
+  //       );
+  //     })
+  //     .catch((e) => {
+  //       console.error(
+  //         "Something went wrong with Merchant Reply Msg creation:\n",
+  //         e
+  //       );
+  //     })
+  //     .finally(() => client.disconnect());
+  // };
 
   /*
    * MERCHANT FUNCTIONS^^^^

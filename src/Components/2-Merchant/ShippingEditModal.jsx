@@ -20,7 +20,7 @@ class ShippingEditModal extends React.Component {
         Number(
           this.props.ShippingOptions[this.props.SelectedShippingIndex][2]
         ) / 100000000
-      ).toFixed(3),
+      ).toFixed(5),
       validPrice: true,
     };
   }

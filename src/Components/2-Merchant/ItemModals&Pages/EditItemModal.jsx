@@ -47,7 +47,8 @@ class EditItemModal extends React.Component {
       //'price'
       priceInput: (
         Number(this.props.SelectedItem.variants[0][2]) / 100000000
-      ).toFixed(3),
+      ).toFixed(5),
+      // Number((this.state.priceInput * 100000000).toFixed(0)),
       validPrice: true,
 
       //   'extraInfo',
@@ -592,7 +593,7 @@ class EditItemModal extends React.Component {
                       defaultValue={this.state.priceInput}
                       // {(
                       //   this.props.SelectedItem.variants[0][2] / 100000000
-                      // ).toFixed(3)}
+                      // ).toFixed(5)}
                       required
                       isValid={this.state.validPrice}
                       //isInvalid={!this.state.validAmt}
